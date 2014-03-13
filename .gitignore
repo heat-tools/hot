@@ -1,0 +1,12 @@
+*.pyc
+*.egg-info*
+dist
+build
+
+# Vagrant files
+.vagrant
+vagrant/cookbooks/
+vagrant/tmp/
+
+# Python virtualenv for testing
+venv
