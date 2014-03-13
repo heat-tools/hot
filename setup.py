@@ -1,6 +1,10 @@
 from setuptools import setup, find_packages
 
-dependencies = []
+dependencies = [
+    'argh',
+    'PyYAML',
+    'urlparse2',
+]
 
 setup(
     name='hot',
