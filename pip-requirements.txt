@@ -1,0 +1,6 @@
+argh
+argcomplete
+envassert
+python-heatclient
+PyYAML
+urlparse2
