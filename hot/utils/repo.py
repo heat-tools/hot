@@ -22,6 +22,7 @@ def check(args):
 
     #see if there is a 'template' attribute in args namespace
     template_attr = getattr(args, 'template')
+
     if template_attr:
         if not os.path.isdir(os.path.join(cwd, '.git')):
             print error_message % cwd

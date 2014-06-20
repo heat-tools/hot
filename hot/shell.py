@@ -10,7 +10,7 @@ from argh import arg, alias, ArghParser
 import hot.utils
 
 @alias('test')
-@arg('--template', default='template.yaml')
+@arg('--template', default='.catalog')
 @arg('--tests-file', default='tests.yaml')
 def do_template_test(args):
     """ Test a template by going through the test scenarios in 'tests.yaml' or
