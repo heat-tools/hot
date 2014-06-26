@@ -25,27 +25,23 @@ def check(args):
 
     if template_attr:
         if not os.path.isdir(os.path.join(cwd, '.git')):
-            print error_message % cwd
-            sys.exit(1)
+            sys.exit(error_message % cwd)
         else:
             try:
                 with open(os.path.join(cwd, template_attr)):
                     pass
             except IOError:
-                print error_message % cwd
-                sys.exit(1)
+                sys.exit(error_message % cwd)
 
     else:
         if not os.path.isdir(os.path.join(cwd, '.git')):
-            print error_message % cwd
-            sys.exit(1)
+            sys.exit(error_message % cwd)
         else:
             try:
                 with open(template_attr):
                     pass
             except IOError:
-                print error_message % cwd
-                sys.exit(1)
+                sys.exit(error_message % cwd)
 
     if not cwd.endswith('/'):
         cwd += '/'

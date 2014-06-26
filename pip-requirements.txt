@@ -1,6 +1,7 @@
 argh
 argcomplete
 envassert
+fabric
 python-heatclient
 PyYAML
 urlparse2
