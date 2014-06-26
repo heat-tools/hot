@@ -1,5 +1,6 @@
 """ hot is the command-line tool for testing Heat Templates """
 import fabric
+import imp
 import json
 import os
 import re
@@ -9,15 +10,10 @@ import sys
 import yaml
 
 from argh import arg, alias, ArghParser
-
+from fabric.api import env, task
 from heatclient.v1 import Client as heatClient
 from time import sleep, time
 from urlparse import urlparse
-
-# The following lines are needed since we use execfile() to load the test
-# script.
-from envassert import cron, detect, file, group, package, port, process, service, user
-from fabric.api import env, task
 
 import hot.utils
 
@@ -69,6 +65,7 @@ def do_template_test(args):
             try:
                 run_resource_tests(hc, stack['stack']['id'],
                                    test)
+                print "  Test Passed!"
             except:
                 e = sys.exc_info()[0]
                 delete_test_deployment(hc, stack)
@@ -138,14 +135,16 @@ def run_envassert_tasks(test_name, test):
     """Setup fabric environment and run envassert script"""
     env_setup = test['envassert']
     if env_setup['env']:
+        fab_file = env_setup['env']['fabfile']
         print "  Preparing environtment to run envassert tests:"
         for k, v in env_setup['env'].iteritems():
             print "    Setting env['%s'] to %s" % (k, v)
             env[k] = v
-        execfile(env_setup['env']['fabfile'])
+        mod_name = os.path.splitext(os.path.basename(fab_file))[0]
+        mod = imp.load_source(mod_name, fab_file)
         for task in env_setup['env']['tasks']:
             print "  Launching envassert test '%s', task '%s' on: %s" % (test_name, task, env.hosts)
-            fabric.tasks.execute(locals()[task])
+            fabric.tasks.execute(getattr(mod, task))
 
 
 def convert_to_array(value):
