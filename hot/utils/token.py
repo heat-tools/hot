@@ -1,7 +1,8 @@
-"""Git and Github utility functions"""
+"""Functions for getting Auth Tokens from Racker Auth"""
 
 import json
 import requests
+
 
 def get_token(endpoint, username, password=None, api_key=None):
     if "/v2.0" not in endpoint:

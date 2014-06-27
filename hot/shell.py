@@ -20,6 +20,7 @@ import hot.utils
 ENV_VARS = ['OS_PASSWORD', 'OS_USERNAME', 'OS_TENANT_ID', 'OS_AUTH_URL',
             'HEAT_URL']
 
+
 def verify_environment_vars(variables):
     for variable in variables:
         try:
@@ -102,7 +103,8 @@ def run_resource_tests(hc, stack_id, resource_tests):
         if test[test_name]['envassert']:
             run_envassert_tasks(test_name, test[test_name])
 
-    delete_file(ssh_key_file, "Deleting ssh_private_key file '%s'." % ssh_key_file)
+    delete_file(ssh_key_file, "Deleting ssh_private_key file '%s'." %
+                ssh_key_file)
 
 
 def update_dict(items, outputs):
@@ -130,7 +132,6 @@ def update_dict(items, outputs):
     return items
 
 
-
 def run_envassert_tasks(test_name, test):
     """Setup fabric environment and run envassert script"""
     env_setup = test['envassert']
@@ -143,7 +144,9 @@ def run_envassert_tasks(test_name, test):
         mod_name = os.path.splitext(os.path.basename(fab_file))[0]
         mod = imp.load_source(mod_name, fab_file)
         for task in env_setup['env']['tasks']:
-            print "  Launching envassert test '%s', task '%s' on: %s" % (test_name, task, env.hosts)
+            print "  Run envassert test '%s', task '%s' on: %s" % (test_name,
+                                                                   task,
+                                                                   env.hosts)
             fabric.tasks.execute(getattr(mod, task))
 
 
@@ -174,11 +177,11 @@ def delete_file(file, message="Deleting file '%s'" % file):
 def launch_test_deployment(hc, template, test):
     pattern = re.compile('[\W]')
     stack_name = pattern.sub('_', "%s-%s" % (test['name'], time()))
-    data = { "stack_name": stack_name, "template": yaml.safe_dump(template) }
+    data = {"stack_name": stack_name, "template": yaml.safe_dump(template)}
 
     timeout = get_create_value(test, 'timeout')
     parameters = get_create_value(test, 'parameters')
-    retries = get_create_value(test, 'retries') # TODO: Implement retries
+    retries = get_create_value(test, 'retries')  # TODO: Implement retries
 
     if timeout:
         timeout_value = timeout * 60
@@ -194,8 +197,8 @@ def launch_test_deployment(hc, template, test):
         print "  Timeout set to %s seconds." % timeout_value
 
     try:
-        monitor_stack(hc, stack)
-        signal.alarm(0) # Disable alarm on successful build
+        monitor_stack(hc, stack['stack']['id'])
+        signal.alarm(0)
     except Exception:
         delete_test_deployment(hc, stack)
         sys.exit("Stack failed to deploy")
@@ -211,18 +214,21 @@ def get_create_value(test, key):
     return None
 
 
-def monitor_stack(hc, stack, sleeper=10):
+def monitor_stack(hc, stack_id, sleeper=10):
     incomplete = True
     while incomplete:
-        print "  Stack %s in progress, checking again in %s seconds.." % (stack['stack']['id'], sleeper)
+        print "  Stack %s in progress, checking in %s seconds.." % (stack_id,
+                                                                    sleeper)
         sleep(sleeper)
-        status = hc.stacks.get(stack['stack']['id'])
+        status = hc.stacks.get(stack_id)
         if status.stack_status == u'CREATE_COMPLETE':
             incomplete = False
-            print "  Stack %s built successfully!" % stack['stack']['id']
+            print "  Stack %s built successfully!" % stack_id
         elif status.stack_status == u'FAILED':
-            print "  Stack %s build failed! Reason:\n  %s" % (stack['stack']['id'], status.stack_status_reason)
-            raise Exception("Stack build %s failed" % stack['stack']['id'])
+            stack_status = status.stack_status_reason
+            print "  Stack %s build failed! Reason:\n  %s" % (stack_id,
+                                                              stack_status)
+            raise Exception("Stack build %s failed" % stack_id)
 
 
 def get_raw_yaml_file(args, file_path=None):
