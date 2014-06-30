@@ -224,7 +224,7 @@ def monitor_stack(hc, stack_id, sleeper=10):
         if status.stack_status == u'CREATE_COMPLETE':
             incomplete = False
             print "  Stack %s built successfully!" % stack_id
-        elif status.stack_status == u'FAILED':
+        elif status.stack_status == u'CREATE_FAILED':
             stack_status = status.stack_status_reason
             print "  Stack %s build failed! Reason:\n  %s" % (stack_id,
                                                               stack_status)
