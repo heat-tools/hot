@@ -1,6 +1,4 @@
 """ hot is the command-line tool for testing Heat Templates """
-import fabric
-import imp
 import json
 import os
 import re
@@ -10,12 +8,12 @@ import sys
 import yaml
 
 from argh import arg, alias, ArghParser
-from fabric.api import env, task
 from heatclient.v1 import Client as heatClient
 from time import sleep, time
 from urlparse import urlparse
 
 import hot.utils
+import hot.tests
 
 ENV_VARS = ['OS_PASSWORD', 'OS_USERNAME', 'OS_TENANT_ID', 'OS_AUTH_URL',
             'HEAT_URL']
@@ -68,9 +66,11 @@ def do_template_test(args):
                                    test)
                 print "  Test Passed!"
             except:
-                e = sys.exc_info()[0]
+                exctype, value = sys.exc_info()[:2]
                 delete_test_deployment(hc, stack)
-                sys.exit("Test Failed! Error: %s" % e)
+                sys.exit("Test Failed! %s: %s" %
+                         (exctype, value))
+
 
         delete_test_deployment(hc, stack)
 
@@ -100,8 +100,11 @@ def run_resource_tests(hc, stack_id, resource_tests):
 
     for test in resource_tests['tests']:
         test_name = test.keys()[0]
-        if test[test_name]['fabric']:
-            run_fabric_tasks(test_name, test[test_name])
+        print test[test_name]
+        if "fabric" in test[test_name]:
+            hot.tests.fab.run_fabric_tasks(test_name, test[test_name])
+        else:
+            print "  No tests defined."
 
     delete_file(ssh_key_file, "Deleting ssh_private_key file '%s'." %
                 ssh_key_file)
@@ -130,24 +133,6 @@ def update_dict(items, outputs):
     except:
         pass
     return items
-
-
-def run_fabric_tasks(test_name, test):
-    """Setup fabric environment and run fabric script"""
-    env_setup = test['fabric']
-    if env_setup['env']:
-        fab_file = env_setup['env']['fabfile']
-        print "  Preparing environtment to run fabric tests:"
-        for k, v in env_setup['env'].iteritems():
-            print "    Setting env['%s'] to %s" % (k, v)
-            env[k] = v
-        mod_name = os.path.splitext(os.path.basename(fab_file))[0]
-        mod = imp.load_source(mod_name, fab_file)
-        for task in env_setup['env']['tasks']:
-            print "  Run fabric test '%s', task '%s' on: %s" % (test_name,
-                                                                   task,
-                                                                   env.hosts)
-            fabric.tasks.execute(getattr(mod, task))
 
 
 def convert_to_array(value):
