@@ -1,5 +1,6 @@
 import fabric
 import imp
+import os
 
 from fabric.api import env, task
 
