@@ -100,7 +100,7 @@ def run_resource_tests(hc, stack_id, resource_tests):
 
     for test in resource_tests['tests']:
         test_name = test.keys()[0]
-        print test[test_name]
+        # print test[test_name]
         if "fabric" in test[test_name]:
             hot.tests.fab.run_fabric_tasks(test_name, test[test_name])
         else:
