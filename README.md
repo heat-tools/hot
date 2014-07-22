@@ -38,7 +38,7 @@ The `hot` command takes a single verb, 'test'.  Issuing the command without a
 a verb will result in the usage output:
 ```
 (venv)~/src/hot $ hot
-usage: hot [-h] {test} ...
+usage: hot [-h] {test,docs} ...
 ```
 `hot` must be run inside of a template repository that contains a `tests.yaml`
 file. `tests.yaml` dictates how `hot` will spin up deployments and test them.
