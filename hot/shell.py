@@ -18,6 +18,8 @@ import hot.tests
 ENV_VARS = ['OS_PASSWORD', 'OS_USERNAME', 'OS_TENANT_ID', 'OS_AUTH_URL',
             'HEAT_URL']
 
+DOC_SECTIONS = ['parameters', 'outputs']
+
 
 def verify_environment_vars(variables):
     for variable in variables:
@@ -28,6 +30,79 @@ def verify_environment_vars(variables):
             env_list = ', '.join([str(env) for env in ENV_VARS])
             sys.exit("KeyError: %s not set.\n  Tool requires the following env"
                      "ironmental variables to be set %s" % (exc, env_list))
+
+
+@alias('docs')
+@arg('--template', default='.catalog')
+def do_create_docs(args):
+    """Generate the basics for the README.md based on the information in a
+    given template.
+    """
+    verified_template_directory = hot.utils.repo.check(args)
+    template_attr = getattr(args, 'template')
+    path_to_template = os.path.join(verified_template_directory, template_attr)
+    try:
+        raw_template = get_raw_yaml_file(args, file_path=path_to_template)
+        validated_template = hot.utils.yaml.load(raw_template)
+    except StandardError as exc:
+        sys.exit(exc)
+    # print validated_template['parameters']
+    if 'description' in validated_template:
+        print "Description\n===========\n\n%s\n" % \
+              validated_template['description']
+    if 'resources' in validated_template:
+        resources = get_resource_types(validated_template['resources'])
+        print "Requirements\n============\n* A Heat provider that supports th"\
+              "e following:\n%s\n* An OpenStack username, password, and tenan"\
+              "t id.\n* [python-heatclient](https://github.com/openstack/pyth"\
+              "on-heatclient)\n`>= v0.2.8`:\n\n```bash\npip install python-he"\
+              "atclient\n```\n\nWe recommend installing the client within a ["\
+              "Python virtual\nenvironment](http://www.virtualenv.org/).\n" % \
+              ', '.join(map(str, resources))
+    for section in DOC_SECTIONS:
+        if section in validated_template:
+            header = ""
+            footer = ""
+            if section is 'parameters':
+                header = "Parameters\n==========\nParameters can be replaced "\
+                         "with your own values when standing up a stack. Use"\
+                         "\nthe `-P` flag to specify a custom parameter.\n"
+            if section is 'outputs':
+                header = "Outputs\n=======\nOnce a stack comes online, use `h"\
+                         "eat output-list` to see all available outputs.\nUse"\
+                         " `heat output-show <OUTPUT NAME>` to get the value "\
+                         "of a specific output.\n"
+                footer = "\nFor multi-line values, the response will come in "\
+                         "an escaped form. To get rid of\nthe escapes, use `e"\
+                         "cho -e '<STRING>' > file.txt`. For vim users, a sub"\
+                         "stitution\ncan be done within a file using `%s/\\\\"\
+                         "n/\\r/g`."
+            convert_to_markdown(header, footer, validated_template[section])
+
+
+def convert_to_markdown(header, footer, values):
+    """Convert input to markdown format"""
+    outputs = "%s" % header
+    for value in values:
+        key = value
+        outputs = outputs + "\n* `%s`: " % key
+        v = values[key]
+        if 'description' in v:
+            description = values[key]['description']
+            outputs = outputs + "%s " % description
+        if 'default' in v:
+            default = values[key]['default']
+            outputs = outputs + "(Default: %s)" % default
+    outputs = outputs + "\n%s" % footer
+    print outputs
+
+
+def get_resource_types(resources):
+    resources_list = set()
+    for resource in resources:
+        if 'type' in resources[resource]:
+            resources_list.add(resources[resource]['type'])
+    return resources_list
 
 
 @alias('test')
@@ -70,8 +145,6 @@ def do_template_test(args):
                 delete_test_deployment(hc, stack)
                 sys.exit("Test Failed! %s: %s" %
                          (exctype, value))
-
-
         delete_test_deployment(hc, stack)
 
 
@@ -251,6 +324,7 @@ def main():
         argparser = ArghParser()
         argparser.add_commands([
             do_template_test,
+            do_create_docs,
         ])
 
         argparser.dispatch()
