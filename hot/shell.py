@@ -53,12 +53,12 @@ def do_create_docs(args):
     if 'resources' in validated_template:
         resources = get_resource_types(validated_template['resources'])
         print "Requirements\n============\n* A Heat provider that supports th"\
-              "e following:\n%s\n* An OpenStack username, password, and tenan"\
-              "t id.\n* [python-heatclient](https://github.com/openstack/pyth"\
-              "on-heatclient)\n`>= v0.2.8`:\n\n```bash\npip install python-he"\
-              "atclient\n```\n\nWe recommend installing the client within a ["\
-              "Python virtual\nenvironment](http://www.virtualenv.org/).\n" % \
-              ', '.join(map(str, resources))
+              "e following:\n  * %s\n* An OpenStack username, password, and t"\
+              "enant id.\n* [python-heatclient](https://github.com/openstack/"\
+              "python-heatclient)\n`>= v0.2.8`:\n\n```bash\npip install pytho"\
+              "n-heatclient\n```\n\nWe recommend installing the client within"\
+              " a [Python virtual\nenvironment](http://www.virtualenv.org/)."\
+              "\n" % '\n  * '.join(map(str, resources))
     for section in DOC_SECTIONS:
         if section in validated_template:
             header = ""
