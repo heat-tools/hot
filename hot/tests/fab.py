@@ -18,6 +18,6 @@ def run_fabric_tasks(test_name, test):
         mod = imp.load_source(mod_name, fab_file)
         for task in env_setup['env']['tasks']:
             print "  Run fabric test '%s', task '%s' on: %s" % (test_name,
-                                                                   task,
-                                                                   env.hosts)
+                                                                task,
+                                                                env.hosts)
             fabric.tasks.execute(getattr(mod, task))

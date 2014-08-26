@@ -20,7 +20,7 @@ def check(args):
     error_message = '`%s` does not appear to be a template repo.'
     cwd = os.getcwd()
 
-    #see if there is a 'template' attribute in args namespace
+    # see if there is a 'template' attribute in args namespace
     template_attr = getattr(args, 'template')
 
     if template_attr:
