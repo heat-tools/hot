@@ -11,5 +11,5 @@ setup(
     packages=find_packages(exclude=['vagrant', 'tests', 'examples', 'doc']),
     license='Apache License (2.0)',
     classifiers=["Programming Language :: Python"],
-    url='https://github.rackspace.com/brint-ohearn/hot'
+    url='https://github.com/brint/hot'
 )
