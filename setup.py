@@ -6,7 +6,7 @@ setup(
     keywords='heat orchestration configuration automation rackspace openstack',
     version='0.1.0',
     author='Rackspace Cloud',
-    author_email='check-team@lists.rackspace.com',
+    author_email='brint.ohearn@lists.rackspace.com',
     entry_points={'console_scripts': ['hot=hot.shell:main']},
     packages=find_packages(exclude=['vagrant', 'tests', 'examples', 'doc']),
     license='Apache License (2.0)',
