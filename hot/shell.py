@@ -92,6 +92,8 @@ def convert_to_markdown(header, footer, values):
             outputs = outputs + "%s " % description
         if 'default' in v:
             default = values[key]['default']
+            if isinstance(default, str) and len(default) == 0:
+                default = "''"
             outputs = outputs + "(Default: %s)" % default
     outputs = outputs + "\n%s" % footer
     print outputs
