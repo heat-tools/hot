@@ -58,7 +58,7 @@ def do_create_docs(args):
               "python-heatclient)\n`>= v0.2.8`:\n\n```bash\npip install pytho"\
               "n-heatclient\n```\n\nWe recommend installing the client within"\
               " a [Python virtual\nenvironment](http://www.virtualenv.org/)."\
-              "\n" % '\n  * '.join(map(str, resources))
+              "\n" % '\n  * '.join(map(str, sorted(resources)))
     for section in DOC_SECTIONS:
         if section in validated_template:
             header = ""
