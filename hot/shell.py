@@ -137,7 +137,7 @@ def do_template_test(args):
 
     for test in validated_tests['test-cases']:
         stack = launch_test_deployment(hc, validated_template, test)
-        if test['resource_tests']:
+        if 'resource_tests' in test:
             try:
                 run_resource_tests(hc, stack['stack']['id'],
                                    test)
@@ -159,7 +159,7 @@ def run_resource_tests(hc, stack_id, resource_tests):
     # For debugging purposes
     # print resource_tests
 
-    if resource_tests['ssh_key_file']:
+    if 'ssh_key_file' in resource_tests:
         ssh_key_file = resource_tests['ssh_key_file']
     else:
         ssh_key_file = 'tmp/private_key'
@@ -168,7 +168,7 @@ def run_resource_tests(hc, stack_id, resource_tests):
     if not os.path.exists(os.path.dirname(ssh_key_file)):
         os.makedirs(os.path.dirname(ssh_key_file))
 
-    if resource_tests['ssh_private_key']:
+    if 'ssh_private_key' in resource_tests:
         with os.fdopen(os.open(ssh_key_file, os.O_WRONLY | os.O_CREAT, 0600),
                        'w') as handle:
             handle.write(resource_tests['ssh_private_key'])
