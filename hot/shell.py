@@ -107,6 +107,48 @@ def get_resource_types(resources):
     return resources_list
 
 
+@alias('init')
+@arg('project', help='name of the template project to begin')
+@arg('-s', '--skeleton', default='https://github.com/brint/template-skeleton',
+     help='git repo to clone when initializing this project')
+@arg('-b', '--branch', help='optional: specify the branch to clone')
+@arg('--no-git-init', default=False, help="Do not use 'git init' to initialize"
+                                          " the project")
+@arg('-v', '--verbose', default=False, help='show more verbose output while in'
+                                            'itializing the project')
+def do_template_init(args):
+    """ Initialize a template project by cloning a skeleton repo.
+
+    TODO: Implement verbose functionality
+    """
+    project = getattr(args, 'project')
+    skeleton = getattr(args, 'skeleton')
+    branch = getattr(args, 'branch')
+    verbose = getattr(args, 'verbose')
+    no_git = getattr(args, 'no_git_init')
+
+    if hot.utils.string.valid_project_name(project):
+        if branch:
+            if hot.utils.repo.valid_branch_name(getattr(args, 'branch')):
+                if no_git:
+                    hot.utils.repo.clone_repo(skeleton, project, branch,
+                                              'False')
+                else:
+                    hot.utils.repo.clone_repo(skeleton, project, branch)
+            else:
+                raise Exception("Invalid branch name: '%s'" %
+                                getattr(args, 'branch'))
+        else:
+            if no_git:
+                hot.utils.repo.clone_repo(skeleton, project, git_init=False)
+            else:
+                hot.utils.repo.clone_repo(skeleton, project)
+
+    else:
+        raise Exception("Invalid project name. Name must be a string <100 char"
+                        "acters. Name provided: %s" % project)
+
+
 @alias('test')
 @arg('--template', default='.catalog')
 @arg('--tests-file', default='tests.yaml')
@@ -324,6 +366,7 @@ def main():
         argparser.add_commands([
             do_template_test,
             do_create_docs,
+            do_template_init,
         ])
 
         argparser.dispatch()

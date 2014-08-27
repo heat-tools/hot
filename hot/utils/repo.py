@@ -1,10 +1,11 @@
 """Git and Github utility functions"""
 
 import os
+import shutil
 import sys
-import re
 import time
 
+from git import Git
 from subprocess import check_output, CalledProcessError
 from urlparse import urlparse
 
@@ -47,3 +48,25 @@ def check(args):
         cwd += '/'
 
     return cwd
+
+
+def clone_repo(repo, path, branch=None, git_init=True):
+    if branch:
+        Git().clone('--branch', branch, repo, path)
+    else:
+        Git().clone(repo, path)
+
+    starting_dir = os.getcwd()
+    os.chdir(path)
+    shutil.rmtree('.git')
+    if git_init:
+        Git().init()
+    os.chdir(starting_dir)
+
+
+def valid_branch_name(branch):
+    try:
+        Git().check_ref_format("--branch", branch)
+        return True
+    except GitCommandError:
+        return False
