@@ -266,11 +266,8 @@ def launch_test_deployment(hc, template, test):
 
 
 def get_create_value(test, key):
-    try:
-        if test['create'][key]:
-            return test['create'][key]
-    except KeyError:
-        return None
+    if key in test['create']:
+        return test['create'][key]
     return None
 
 
