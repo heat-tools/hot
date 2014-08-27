@@ -30,7 +30,7 @@ git clone git@github.rackspace.com:brint-ohearn/hot.git
 cd hot
 virtualenv venv
 source venv/bin/activate
-pip install -r pip-requirements.txt
+pip install -r requirements.txt
 python setup.py install
 ```
 
