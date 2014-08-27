@@ -1,7 +1,11 @@
 hot
 ===
+WARNING: Use at your own risk! This comes with no warranties, guarantees, or
+promises of any kind.
+
 Command line helper utility for authoring and performing extended validation
-testing on [Heat](https://wiki.openstack.org/wiki/Heat) templates.
+testing on [Heat](https://wiki.openstack.org/wiki/Heat) templates. The name
+comes from the acronym for Heat Orchestration Templates.
 
 Requirements
 ============
