@@ -26,7 +26,7 @@ Installation
 Clone it down, install it!
 
 ```
-git clone git@github.rackspace.com:brint-ohearn/hot.git
+git clone git@github.com:brint/hot.git
 cd hot
 virtualenv venv
 source venv/bin/activate
