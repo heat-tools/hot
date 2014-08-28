@@ -9,6 +9,16 @@ setup(
     author_email='brint.ohearn@rackspace.com',
     entry_points={'console_scripts': ['hot=hot.shell:main']},
     packages=find_packages(exclude=['vagrant', 'tests', 'examples', 'doc']),
+    install_requires=[
+        'argh',
+        'envassert',
+        'fabric',
+        'gitpython',
+        'python-heatclient',
+        'python-keystoneclient',
+        'PyYAML',
+        'urlparse2',
+    ],
     license='Apache License (2.0)',
     classifiers=["Programming Language :: Python"],
     url='https://github.com/brint/hot'
