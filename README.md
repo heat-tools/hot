@@ -23,7 +23,11 @@ Requirements
 
 Installation
 ============
-Clone it down, install it!
+Install with pip (recommended):
+```
+pip install hot
+```
+Clone it down, install it:
 
 ```
 git clone git@github.com:brint/hot.git
