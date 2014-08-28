@@ -1,5 +1,4 @@
 argh
-argcomplete
 envassert
 fabric
 gitpython
