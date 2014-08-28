@@ -9,17 +9,19 @@ comes from the acronym for Heat Orchestration Templates.
 
 Requirements
 ============
-* [Pip](http://pip.readthedocs.org/en/latest/installing.html) must be
+* For Ubuntu 12.04/14.04, install the necessary packages:
+  * `sudo apt-get install -y python-dev python-pip gcc libxslt1-dev python-lxml git`
+* All systems: [pip](http://pip.readthedocs.org/en/latest/installing.html) must be
   installed.
 * [virtualenv](http://virtualenv.readthedocs.org/en/latest/virtualenv.html#installation)
-  must be installed
+  is recommended.
 * The following environmental variables must be properly set before running
   `hot`:
-    * `OS_PASSWORD`
-    * `OS_USERNAME`
-    * `OS_TENANT_ID`
-    * `OS_AUTH_URL`
-    * `HEAT_URL`
+  * `OS_PASSWORD`
+  * `OS_USERNAME`
+  * `OS_TENANT_ID`
+  * `OS_AUTH_URL`
+  * `HEAT_URL`
 
 Installation
 ============
@@ -46,7 +48,7 @@ The `hot` command takes a single verb, 'test'.  Issuing the command without a
 a verb will result in the usage output:
 ```
 (venv)~/src/hot $ hot
-usage: hot [-h] {test,docs} ...
+usage: hot [-h] {test,docs,init} ...
 ```
 `hot` must be run inside of a template repository that contains a `tests.yaml`
 file. `tests.yaml` dictates how `hot` will spin up deployments and test them.
