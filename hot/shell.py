@@ -150,8 +150,10 @@ def do_template_init(args):
 
 
 @alias('test')
-@arg('--template', default='.catalog')
-@arg('--tests-file', default='tests.yaml')
+@arg('--template', default='.catalog', help='Heat template to launch.')
+@arg('--tests-file', default='tests.yaml', help='Test file to use.')
+@arg('--keep-failed', default=False, help='Do not delete a failed test'
+                                          'deployment.')
 def do_template_test(args):
     """ Test a template by going through the test scenarios in 'tests.yaml' or
     the tests file specified by the user
@@ -178,7 +180,8 @@ def do_template_test(args):
     hc = heatClient(endpoint=os.environ['HEAT_URL'], token=auth_token)
 
     for test in validated_tests['test-cases']:
-        stack = launch_test_deployment(hc, validated_template, test)
+        stack = launch_test_deployment(hc, validated_template, test,
+                                       args.keep_failed)
         if 'resource_tests' in test:
             try:
                 run_resource_tests(hc, stack['stack']['id'],
@@ -186,10 +189,10 @@ def do_template_test(args):
                 print "  Test Passed!"
             except:
                 exctype, value = sys.exc_info()[:2]
-                delete_test_deployment(hc, stack)
+                delete_test_deployment(hc, stack, args.keep_failed)
                 sys.exit("Test Failed! %s: %s" %
                          (exctype, value))
-        delete_test_deployment(hc, stack)
+        delete_test_deployment(hc, stack, args.keep_failed)
 
 
 def run_resource_tests(hc, stack_id, resource_tests):
@@ -266,9 +269,12 @@ def get_output(key, outputs):
             return output['output_value']
 
 
-def delete_test_deployment(hc, stack):
-    print "  Deleting %s" % stack['stack']['id']
-    hc.stacks.delete(stack['stack']['id'])
+def delete_test_deployment(hc, stack, keep_failed):
+    if keep_failed:
+        print "  Keeping %s up." % stack['stack']['id']
+    else:
+        print "  Deleting %s" % stack['stack']['id']
+        hc.stacks.delete(stack['stack']['id'])
 
 
 def delete_file(file, message="Deleting file '%s'" % file):
@@ -276,7 +282,7 @@ def delete_file(file, message="Deleting file '%s'" % file):
     os.remove(file)
 
 
-def launch_test_deployment(hc, template, test):
+def launch_test_deployment(hc, template, test, keep_failed):
     pattern = re.compile('[\W]')
     stack_name = pattern.sub('_', "%s-%s" % (test['name'], time()))
     data = {"stack_name": stack_name, "template": yaml.safe_dump(template)}
@@ -302,7 +308,7 @@ def launch_test_deployment(hc, template, test):
         monitor_stack(hc, stack['stack']['id'])
         signal.alarm(0)
     except Exception:
-        delete_test_deployment(hc, stack)
+        delete_test_deployment(hc, stack, keep_failed)
         sys.exit("Stack failed to deploy")
     return stack
 
