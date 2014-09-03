@@ -192,7 +192,7 @@ def do_template_test(args):
                 delete_test_deployment(hc, stack, args.keep_failed)
                 sys.exit("Test Failed! %s: %s" %
                          (exctype, value))
-        delete_test_deployment(hc, stack, args.keep_failed)
+        delete_test_deployment(hc, stack)
 
 
 def run_resource_tests(hc, stack_id, resource_tests):
@@ -269,8 +269,8 @@ def get_output(key, outputs):
             return output['output_value']
 
 
-def delete_test_deployment(hc, stack, keep_failed):
-    if keep_failed:
+def delete_test_deployment(hc, stack, keep_deployment=False):
+    if keep_deployment:
         print "  Keeping %s up." % stack['stack']['id']
     else:
         print "  Deleting %s" % stack['stack']['id']
