@@ -11,8 +11,8 @@ Requirements
 ============
 * For Ubuntu 12.04/14.04, install the necessary packages:
   * `sudo apt-get install -y python-dev python-pip gcc libxslt1-dev python-lxml git`
-* All systems: [pip](http://pip.readthedocs.org/en/latest/installing.html) must be
-  installed.
+* All systems: [pip](http://pip.readthedocs.org/en/latest/installing.html)
+  1.5.6+ must be installed.
 * [virtualenv](http://virtualenv.readthedocs.org/en/latest/virtualenv.html#installation)
   is recommended.
 * The following environmental variables must be properly set before running
