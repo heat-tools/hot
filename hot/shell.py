@@ -301,7 +301,8 @@ def launch_test_deployment(hc, template, test, keep_failed):
 
     try:
         monitor_stack(hc, stack['stack']['id'])
-        signal.alarm(0)
+        if timeout_value:
+            signal.alarm(0)
     except Exception:
         delete_test_deployment(hc, stack, keep_failed)
         sys.exit("Stack failed to deploy")
