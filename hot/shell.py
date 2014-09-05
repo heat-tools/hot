@@ -223,11 +223,11 @@ def run_resource_tests(hc, stack_id, resource_tests):
         # print test[test_name]
         if "fabric" in test[test_name]:
             hot.tests.fab.run_fabric_tasks(test_name, test[test_name])
+        elif "script" in test[test_name]:
+            hot.tests.script.run_script(test_name, test[test_name])
         else:
             print "  No tests defined."
-
-    delete_file(ssh_key_file, "Deleting ssh_private_key file '%s'." %
-                ssh_key_file)
+    hot.utils.files.delete_file(ssh_key_file)
 
 
 def update_dict(items, outputs):
@@ -275,11 +275,6 @@ def delete_test_deployment(hc, stack, keep_deployment=False):
     else:
         print "  Deleting %s" % stack['stack']['id']
         hc.stacks.delete(stack['stack']['id'])
-
-
-def delete_file(file, message="Deleting file '%s'" % file):
-    print "  %s" % message
-    os.remove(file)
 
 
 def launch_test_deployment(hc, template, test, keep_failed):
