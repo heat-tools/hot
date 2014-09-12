@@ -41,7 +41,7 @@ python setup.py install
 ```
 
 Usage
-========
+=====
 Ensure you have activated your virtual environment before every use.
 
 The `hot` command takes a single verb, 'test'.  Issuing the command without a
@@ -102,6 +102,36 @@ test-cases:
 ```
 The test will be considered successful if the template builds successfully
 within the user defined timeout window.
+
+## Test Options
+The test options are documented if you run `hot test --help`:
+```yaml
+$ hot test --help
+usage: hot test [-h] [--template TEMPLATE] [--tests-file TESTS_FILE] [-k]
+                [--test-cases TEST_CASES [TEST_CASES ...]]
+
+ Test a template by going through the test scenarios in 'tests.yaml' or
+    the tests file specified by the user
+
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --template TEMPLATE   Heat template to launch. (default: .catalog)
+  --tests-file TESTS_FILE
+                        Test file to use. (default: tests.yaml)
+  -k, --keep-failed     Do not delete a failed test deployment. (default:
+                        False)
+  --test-cases TEST_CASES [TEST_CASES ...]
+                        Space delimited list of tests to run. If none are
+                        specified, all will be run. (default: None)
+```
+As a note, if you have spaces, commas, or other special characters, put the
+test name in double quotes, and each string will be interpreted individually.
+Example:
+
+```bash
+hot test --test-cases "First Test" "Second Test, with special options"
+```
 
 ## Resource Tests
 These are a list of tests with arbitrary names to run. The keys under the test

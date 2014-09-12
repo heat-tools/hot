@@ -152,8 +152,11 @@ def do_template_init(args):
 @alias('test')
 @arg('--template', default='.catalog', help='Heat template to launch.')
 @arg('--tests-file', default='tests.yaml', help='Test file to use.')
-@arg('--keep-failed', default=False, help='Do not delete a failed test'
-                                          'deployment.')
+@arg('-k', '--keep-failed', default=False, help='Do not delete a failed test '
+                                                'deployment.')
+@arg('--test-cases', nargs='+', type=str, help='Space delimited list of '
+                                               'tests to run. If none are '
+                                               'specified, all will be run.')
 def do_template_test(args):
     """ Test a template by going through the test scenarios in 'tests.yaml' or
     the tests file specified by the user
@@ -161,15 +164,16 @@ def do_template_test(args):
     verified_template_directory = hot.utils.repo.check(args)
     template_attr = getattr(args, 'template')
     tests_attr = getattr(args, 'tests_file')
+    test_cases = getattr(args, 'test_cases')
     path_to_template = os.path.join(verified_template_directory, template_attr)
     path_to_tests = os.path.join(verified_template_directory, tests_attr)
     try:
+        verify_environment_vars(ENV_VARS)
         raw_template = get_raw_yaml_file(args, file_path=path_to_template)
         validated_template = hot.utils.yaml.load(raw_template)
         raw_tests = get_raw_yaml_file(args, file_path=path_to_tests)
         validated_tests = hot.utils.yaml.load(raw_tests)
-        verify_environment_vars(ENV_VARS)
-
+        tests = validated_tests['test-cases']
     except StandardError as exc:
         sys.exit(exc)
 
@@ -179,7 +183,14 @@ def do_template_test(args):
 
     hc = heatClient(endpoint=os.environ['HEAT_URL'], token=auth_token)
 
-    for test in validated_tests['test-cases']:
+    if test_cases:
+        user_tests = []
+        for case in test_cases:
+            for test in tests:
+                if test['name'] == case:
+                    user_tests.append(test)
+        tests = user_tests
+    for test in tests:
         stack = launch_test_deployment(hc, validated_template, test,
                                        args.keep_failed)
         if 'resource_tests' in test:
