@@ -108,7 +108,7 @@ The test options are documented if you run `hot test --help`:
 ```yaml
 $ hot test --help
 usage: hot test [-h] [--template TEMPLATE] [--tests-file TESTS_FILE] [-k]
-                [--test-cases TEST_CASES [TEST_CASES ...]]
+                [-s SLEEP] [--test-cases TEST_CASES [TEST_CASES ...]]
 
  Test a template by going through the test scenarios in 'tests.yaml' or
     the tests file specified by the user
@@ -121,6 +121,9 @@ optional arguments:
                         Test file to use. (default: tests.yaml)
   -k, --keep-failed     Do not delete a failed test deployment. (default:
                         False)
+  -s SLEEP, --sleep SLEEP
+                        Frequency for checking test stack status. (default:
+                        15)
   --test-cases TEST_CASES [TEST_CASES ...]
                         Space delimited list of tests to run. If none are
                         specified, all will be run. (default: None)

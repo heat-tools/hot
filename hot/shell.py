@@ -154,6 +154,8 @@ def do_template_init(args):
 @arg('--tests-file', default='tests.yaml', help='Test file to use.')
 @arg('-k', '--keep-failed', default=False, help='Do not delete a failed test '
                                                 'deployment.')
+@arg('-s', '--sleep', default=15, type=int, help='Frequency for checking test '
+                                                 'stack status.')
 @arg('--test-cases', nargs='+', type=str, help='Space delimited list of '
                                                'tests to run. If none are '
                                                'specified, all will be run.')
@@ -165,6 +167,7 @@ def do_template_test(args):
     template_attr = getattr(args, 'template')
     tests_attr = getattr(args, 'tests_file')
     test_cases = getattr(args, 'test_cases')
+    sleeper = getattr(args, 'sleep')
     path_to_template = os.path.join(verified_template_directory, template_attr)
     path_to_tests = os.path.join(verified_template_directory, tests_attr)
     try:
@@ -192,7 +195,7 @@ def do_template_test(args):
         tests = user_tests
     for test in tests:
         stack = launch_test_deployment(hc, validated_template, test,
-                                       args.keep_failed)
+                                       args.keep_failed, sleeper)
         if 'resource_tests' in test:
             try:
                 run_resource_tests(hc, stack['stack']['id'],
@@ -288,7 +291,7 @@ def delete_test_deployment(hc, stack, keep_deployment=False):
         hc.stacks.delete(stack['stack']['id'])
 
 
-def launch_test_deployment(hc, template, test, keep_failed):
+def launch_test_deployment(hc, template, test, keep_failed, sleeper):
     pattern = re.compile('[\W]')
     stack_name = pattern.sub('_', "%s-%s" % (test['name'], time()))
     data = {"stack_name": stack_name, "template": yaml.safe_dump(template)}
@@ -311,7 +314,7 @@ def launch_test_deployment(hc, template, test, keep_failed):
         print "  Timeout set to %s seconds." % timeout_value
 
     try:
-        monitor_stack(hc, stack['stack']['id'])
+        monitor_stack(hc, stack['stack']['id'], sleeper)
         if timeout_value:
             signal.alarm(0)
     except Exception:
@@ -326,7 +329,7 @@ def get_create_value(test, key):
     return None
 
 
-def monitor_stack(hc, stack_id, sleeper=10):
+def monitor_stack(hc, stack_id, sleeper=15):
     incomplete = True
     while incomplete:
         print "  Stack %s in progress, checking in %s seconds.." % (stack_id,
