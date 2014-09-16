@@ -4,7 +4,7 @@ setup(
     name='hot',
     description='Heat author command-line utility',
     keywords='heat orchestration configuration automation rackspace openstack',
-    version='0.2.3',
+    version='0.2.4',
     author='Rackspace',
     author_email='brint.ohearn@rackspace.com',
     entry_points={'console_scripts': ['hot=hot.shell:main']},

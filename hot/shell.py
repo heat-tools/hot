@@ -241,7 +241,7 @@ def run_resource_tests(hc, stack_id, resource_tests):
             hot.tests.script.run_script(test_name, test[test_name])
         else:
             print "  No tests defined."
-    if 'ssh_key_file' in resource_tests:
+    if 'ssh_private_key' in resource_tests:
         hot.utils.files.delete_file(ssh_key_file)
 
 
