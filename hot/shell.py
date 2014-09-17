@@ -23,13 +23,17 @@ DOC_SECTIONS = ['parameters', 'outputs']
 
 def verify_environment_vars(variables):
     for variable in variables:
-        try:
-            if os.environ[variable]:
-                pass
-        except KeyError as exc:
-            env_list = ', '.join([str(env) for env in ENV_VARS])
-            sys.exit("KeyError: %s not set.\n  Tool requires the following env"
-                     "ironmental variables to be set %s" % (exc, env_list))
+        env_list = ', '.join([str(env) for env in ENV_VARS])
+        if os.environ.get(variable):
+            next
+        elif variable == 'OS_PASSWORD':
+            if not os.environ.get('OS_AUTH_TOKEN'):
+                raise KeyError("Tool requires either OS_PASSWORD or OS_AUTH_TO"
+                               "KEN to be set.")
+        else:
+            raise KeyError("%s not set. Tool requires the following enviro"
+                           "nmental variables to be set %s" % (variable,
+                                                               env_list))
 
 
 @alias('docs')
@@ -180,9 +184,12 @@ def do_template_test(args):
     except StandardError as exc:
         sys.exit(exc)
 
-    auth_token = hot.utils.token.get_token(os.environ['OS_AUTH_URL'],
-                                           os.environ['OS_USERNAME'],
-                                           password=os.environ['OS_PASSWORD'])
+    auth_token = os.environ.get('OS_AUTH_TOKEN')
+    if not auth_token:
+        os_password = os.environ['OS_PASSWORD']
+        auth_token = hot.utils.token.get_token(os.environ['OS_AUTH_URL'],
+                                               os.environ['OS_USERNAME'],
+                                               password=os_password)
 
     hc = heatClient(endpoint=os.environ['HEAT_URL'], token=auth_token)
 

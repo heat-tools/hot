@@ -22,6 +22,7 @@ Requirements
   * `OS_TENANT_ID`
   * `OS_AUTH_URL`
   * `HEAT_URL`
+* Optionally, you can set `OS_AUTH_TOKEN` as opposed to `OS_PASSWORD`.
 
 Installation
 ============
