@@ -199,6 +199,10 @@ def do_template_test(args):
             for test in tests:
                 if test['name'] == case:
                     user_tests.append(test)
+        if not user_tests or len(user_tests) < len(test_cases):
+            user_defined_tests = ', '.join([str(t) for t in test_cases])
+            sys.exit("Error: One or more of the following test cases not "\
+                     "found: %s" % user_defined_tests)
         tests = user_tests
     for test in tests:
         stack = launch_test_deployment(hc, validated_template, test,
