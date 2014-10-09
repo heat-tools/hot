@@ -5,7 +5,9 @@ promises of any kind.
 
 Command line helper utility for authoring and performing extended validation
 testing on [Heat](https://wiki.openstack.org/wiki/Heat) templates. The name
-comes from the acronym for Heat Orchestration Templates.
+comes from the acronym for Heat Orchestration Templates. This is a very
+Rackspace-y tool. If people are willing to help contribute, we can open up some
+of the more provider specific things like the linting functions.
 
 Requirements
 ============
@@ -35,8 +37,8 @@ Clone it down, install it:
 ```
 git clone git@github.com:brint/hot.git
 cd hot
-virtualenv venv
-source venv/bin/activate
+virtualenv .hot
+source .hot/bin/activate
 pip install -r requirements.txt
 python setup.py install
 ```
@@ -45,15 +47,17 @@ Usage
 =====
 Ensure you have activated your virtual environment before every use.
 
-The `hot` command takes a single verb, 'test'.  Issuing the command without a
+The `hot` command takes a single verb, ie: 'test'.  Issuing the command without
 a verb will result in the usage output:
 ```
-(venv)~/src/hot $ hot
-usage: hot [-h] {test,docs,init} ...
+(.hot)~/src/hot $ hot
+usage: hot [-h] {test,docs,init,lint} ...
+hot: error: too few arguments
 ```
 `hot` must be run inside of a template repository that contains a `tests.yaml`
 file. `tests.yaml` dictates how `hot` will spin up deployments and test them.
-Use the public [memcached](https://github.com/rackspace-orchestration-templates/memcached)
+Use the public
+[memcached](https://github.com/rackspace-orchestration-templates/memcached)
 template repo as a starting point for using `hot`.
 
 
@@ -152,8 +156,9 @@ down for all tests that are run:
 ### Fabric
 `hot` supports template yaml sytax checking, stack build success verification,
 and highly-flexible [fabric](http://www.fabfile.org/)-based integration testing
-to test the resulting servers using [envassert](https://bitbucket.org/r_rudi/envassert)
-and any other methods possible in a python script. You really can do anything.
+to test the resulting servers using
+[envassert](https://bitbucket.org/r_rudi/envassert) and any other methods
+possible in a python script. You really can do anything.
 
 The ideal use case for fabric tests are when you want to tests from within a
 resource. This is great for checking firewall rules, running processes, and

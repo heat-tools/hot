@@ -12,8 +12,10 @@ from heatclient.v1 import Client as heatClient
 from time import sleep, time
 from urlparse import urlparse
 
-import hot.utils
+import hot.lint
 import hot.tests
+import hot.utils
+
 
 ENV_VARS = ['OS_PASSWORD', 'OS_USERNAME', 'OS_TENANT_ID', 'OS_AUTH_URL',
             'HEAT_URL']
@@ -153,6 +155,33 @@ def do_template_init(args):
                         "acters. Name provided: %s" % project)
 
 
+@alias('lint')
+@arg('--template', default='.catalog', help='Heat template to launch.')
+@arg('--metadata', default='rackspace.yaml', help='Metadata file to audit')
+def do_template_lint(args):
+    """Check a template against a set of best practices"""
+    verified_template_directory = hot.utils.repo.check(args)
+    template = getattr(args, 'template')
+    metadata = getattr(args, 'metadata')
+
+    path_to_template = os.path.join(verified_template_directory, template)
+    path_to_metadata = os.path.join(verified_template_directory, metadata)
+
+    try:
+        raw_template = get_raw_yaml_file(args, file_path=path_to_template)
+        validated_template = hot.utils.yaml.load(raw_template)
+        raw_metadata = get_raw_yaml_file(args, file_path=path_to_metadata)
+        validated_metadata = hot.utils.yaml.load(raw_metadata)
+
+    except StandardError as exc:
+        sys.exit(exc)
+
+    for rule_object_name in hot.lint.RULES:
+        rule = getattr(hot.lint, rule_object_name)(validated_template,
+                                                   validated_metadata)
+        rule.check()
+
+
 @alias('test')
 @arg('--template', default='.catalog', help='Heat template to launch.')
 @arg('--tests-file', default='tests.yaml', help='Test file to use.')
@@ -201,7 +230,7 @@ def do_template_test(args):
                     user_tests.append(test)
         if not user_tests or len(user_tests) < len(test_cases):
             user_defined_tests = ', '.join([str(t) for t in test_cases])
-            sys.exit("Error: One or more of the following test cases not "\
+            sys.exit("Error: One or more of the following test cases not "
                      "found: %s" % user_defined_tests)
         tests = user_tests
     for test in tests:
@@ -363,7 +392,7 @@ def get_raw_yaml_file(args, file_path=None):
 
     Reads the contents of any YAML file in the repository as a string
 
-    :param args: the pawn call argument
+    :param args: the hot call argument
     :param file_path: the file name with optional additional path
         (subdirectory) or as a URL
     :returns: the string contents of the file
@@ -395,6 +424,7 @@ def main():
             do_template_test,
             do_create_docs,
             do_template_init,
+            do_template_lint,
         ])
 
         argparser.dispatch()
