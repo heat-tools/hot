@@ -4,7 +4,7 @@ import json
 import requests
 
 
-def get_token(endpoint, username, password=None, api_key=None):
+def get_auth_document(endpoint, username, password=None, api_key=None):
     if "/v2.0" not in endpoint:
         endpoint = endpoint + "/v2.0"
     if "/tokens" not in endpoint:
@@ -28,4 +28,12 @@ def get_token(endpoint, username, password=None, api_key=None):
 
     response.raise_for_status()
     results = response.json()
+
+    return results
+
+
+def get_token(endpoint, username, password=None, api_key=None):
+    results = get_auth_document(endpoint, username, password=password,
+                                api_key=api_key)
+
     return results['access']['token']['id']
