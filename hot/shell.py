@@ -15,10 +15,10 @@ from urlparse import urlparse
 import hot.lint
 import hot.tests
 import hot.utils
+import hot.utils.auth
 
 
-ENV_VARS = ['OS_PASSWORD', 'OS_USERNAME', 'OS_TENANT_ID', 'OS_AUTH_URL',
-            'HEAT_URL']
+ENV_VARS = ['OS_PASSWORD', 'OS_USERNAME', 'OS_TENANT_ID', 'OS_AUTH_URL']
 
 DOC_SECTIONS = ['parameters', 'outputs']
 
@@ -213,14 +213,9 @@ def do_template_test(args):
     except StandardError as exc:
         sys.exit(exc)
 
-    auth_token = os.environ.get('OS_AUTH_TOKEN')
-    if not auth_token:
-        os_password = os.environ['OS_PASSWORD']
-        auth_token = hot.utils.token.get_token(os.environ['OS_AUTH_URL'],
-                                               os.environ['OS_USERNAME'],
-                                               password=os_password)
+    auth = hot.utils.auth.OSAuth()
 
-    hc = heatClient(endpoint=os.environ['HEAT_URL'], token=auth_token)
+    hc = heatClient(endpoint=auth.get_heat_url(), token=auth.get_token())
 
     if test_cases:
         user_tests = []
