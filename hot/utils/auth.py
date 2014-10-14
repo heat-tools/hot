@@ -8,6 +8,10 @@ class OSAuth(object):
     def __init__(self):
         self.creds = self.get_keystone_creds()
         self.keystone_client = ksclient.Client(**self.creds)
+        if not self.creds.get('region_name'):
+            sc = self.keystone_client.service_catalog.catalog
+            self.creds['region_name'] = \
+                sc['user'].get('RAX-AUTH:defaultRegion')
 
     def get_keystone_creds(self):
         creds = {}
@@ -31,7 +35,8 @@ class OSAuth(object):
         if os.environ.get('HEAT_URL'):
             return os.environ.get('HEAT_URL')
         else:
+            region = self.creds.get('region_name')
             heat_url = self.keystone_client.service_catalog.url_for(
                 service_type='orchestration',
-                endpoint_type='publicURL')
+                endpoint_type='publicURL', region_name=region)
             return heat_url
