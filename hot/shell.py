@@ -69,7 +69,8 @@ def docs(**kwargs):
     if badge_attr:
         if badge_attr == 'circle':
             url_prefix = "https://circleci.com/gh/"
-            print "[![Circle CI]({0}{1}/{2}.png?style=badge)]({0}{1}/{2})".format(url_prefix, github_org, github_repo)
+            print "[![Circle CI]({0}{1}/{2}.png?style=badge)]({0}{1}/{2})"\
+                  .format(url_prefix, github_org, github_repo)
         else:
             pass
     # print validated_template['parameters']
