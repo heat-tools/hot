@@ -49,11 +49,13 @@ def do_create_docs(args):
     template_attr = getattr(args, 'template')
     badge_attr = getattr(args, 'badge')
     path_to_template = os.path.join(verified_template_directory, template_attr)
-    path_to_raxtemplate = os.path.join(verified_template_directory, 'rackspace.yaml')
+    path_to_raxtemplate = os.path.join(verified_template_directory,
+                                       'rackspace.yaml')
     try:
         raw_template = get_raw_yaml_file(args, file_path=path_to_template)
         validated_template = hot.utils.yaml.load(raw_template)
-        raw_raxtemplate = get_raw_yaml_file(args, file_path=path_to_raxtemplate)
+        raw_raxtemplate = get_raw_yaml_file(args,
+                                            file_path=path_to_raxtemplate)
         validated_raxtemplate = hot.utils.yaml.load(raw_raxtemplate)
     except StandardError as exc:
         sys.exit(exc)
@@ -70,7 +72,8 @@ def do_create_docs(args):
     if badge_attr:
         if badge_attr == 'circle':
             url_prefix = "https://circleci.com/gh/"
-            print "[![Circle CI]({0}{1}/{2}.png?style=badge)]({0}{1}/{2})".format(url_prefix, github_org, github_repo)
+            print "[![Circle CI]({0}{1}/{2}.png?style=badge)]({0}{1}/{2})"\
+                  .format(url_prefix, github_org, github_repo)
         else:
             pass
     # print validated_template['parameters']
@@ -79,7 +82,8 @@ def do_create_docs(args):
               validated_template['description']
     # Pull out the instructions from rackspace.yaml
     if 'instructions' in validated_raxtemplate:
-        print "Instructions\n===========\n\n{0}\n".format(validated_raxtemplate['instructions'])
+        print "Instructions\n===========\n\n{0}\n".format(
+            validated_raxtemplate['instructions'])
     if 'resources' in validated_template:
         resources = get_resource_types(validated_template['resources'])
         print "Requirements\n============\n* A Heat provider that supports th"\
