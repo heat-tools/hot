@@ -51,12 +51,12 @@ def docs(**kwargs):
     verified_template_directory = hot.utils.repo.check(template_attr)
     path_to_template = os.path.join(verified_template_directory, template_attr)
     path_to_metadata = os.path.join(verified_template_directory,
-                                       metadata_attr)
+                                    metadata_attr)
     try:
         raw_template = get_raw_yaml_file(file_path=path_to_template)
         validated_template = hot.utils.yaml.load(raw_template)
         raw_metadata = get_raw_yaml_file(args,
-                                            file_path=path_to_metadata)
+                                         file_path=path_to_metadata)
         validated_metadata = hot.utils.yaml.load(raw_metadata)
     except StandardError as exc:
         sys.exit(exc)
