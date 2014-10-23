@@ -68,9 +68,10 @@ def docs(**kwargs):
     if 'github-repository-name' in validated_metadata:
         github_repo = validated_metadata['github-repository-name']
     else:
-        github_repo = ''
+        github_repo = False
     # If the --badge arg is passed let's print the badges out first
-    if badge_attr:
+    # Also check and make sure we have values for the badge pieces
+    if badge_attr and github_repo and github_org:
         if badge_attr == 'circle':
             url_prefix = "https://circleci.com/gh/"
             print "[![Circle CI]({0}{1}/{2}.png?style=badge)]({0}{1}/{2})"\
