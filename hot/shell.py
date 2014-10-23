@@ -40,6 +40,7 @@ def verify_environment_vars(variables):
 
 @alias('docs')
 @arg('--template', default='.catalog')
+@arg('--metadata', default='rackspace.yaml', help='Metadata file.')
 @arg('--badge', default='None', help='Badge to add to the top of the output.')
 def do_create_docs(args):
     """Generate the basics for the README.md based on the information in a
@@ -47,25 +48,26 @@ def do_create_docs(args):
     """
     verified_template_directory = hot.utils.repo.check(args)
     template_attr = getattr(args, 'template')
+    metadata_attr = getattr(args, 'metadata')
     badge_attr = getattr(args, 'badge')
     path_to_template = os.path.join(verified_template_directory, template_attr)
-    path_to_raxtemplate = os.path.join(verified_template_directory,
-                                       'rackspace.yaml')
+    path_to_metadata = os.path.join(verified_template_directory,
+                                       metadata_attr)
     try:
         raw_template = get_raw_yaml_file(args, file_path=path_to_template)
         validated_template = hot.utils.yaml.load(raw_template)
-        raw_raxtemplate = get_raw_yaml_file(args,
-                                            file_path=path_to_raxtemplate)
-        validated_raxtemplate = hot.utils.yaml.load(raw_raxtemplate)
+        raw_metadata = get_raw_yaml_file(args,
+                                            file_path=path_to_metadata)
+        validated_metadata = hot.utils.yaml.load(raw_metadata)
     except StandardError as exc:
         sys.exit(exc)
     # Set necessary variables for CI badges based on rackspace.yaml information
-    if 'github-organization' in validated_raxtemplate:
-        github_org = validated_raxtemplate['github-organization']
+    if 'github-organization' in validated_metadata:
+        github_org = validated_metadata['github-organization']
     else:
         github_org = 'rackspace-orchestration-templates'
-    if 'github-repository-name' in validated_raxtemplate:
-        github_repo = validated_raxtemplate['github-repository-name']
+    if 'github-repository-name' in validated_metadata:
+        github_repo = validated_metadata['github-repository-name']
     else:
         github_repo = ''
     # If the --badge arg is passed let's print the badges out first
@@ -81,9 +83,9 @@ def do_create_docs(args):
         print "Description\n===========\n\n%s\n" % \
               validated_template['description']
     # Pull out the instructions from rackspace.yaml
-    if 'instructions' in validated_raxtemplate:
+    if 'instructions' in validated_metadata:
         print "Instructions\n===========\n\n{0}\n".format(
-            validated_raxtemplate['instructions'])
+            validated_metadata['instructions'])
     if 'resources' in validated_template:
         resources = get_resource_types(validated_template['resources'])
         print "Requirements\n============\n* A Heat provider that supports th"\
