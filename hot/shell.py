@@ -7,7 +7,7 @@ import string
 import sys
 import yaml
 
-from argh import arg, alias, ArghParser
+from argh import arg, ArghParser
 from heatclient.v1 import Client as heatClient
 from time import sleep, time
 from urlparse import urlparse
@@ -38,17 +38,16 @@ def verify_environment_vars(variables):
                                                                env_list))
 
 
-@alias('docs')
 @arg('--template', default='.catalog')
-def do_create_docs(args):
+def docs(**kwargs):
     """Generate the basics for the README.md based on the information in a
     given template.
     """
-    verified_template_directory = hot.utils.repo.check(args)
-    template_attr = getattr(args, 'template')
+    template_attr = kwargs['template']
+    verified_template_directory = hot.utils.repo.check(template_attr)
     path_to_template = os.path.join(verified_template_directory, template_attr)
     try:
-        raw_template = get_raw_yaml_file(args, file_path=path_to_template)
+        raw_template = get_raw_yaml_file(file_path=path_to_template)
         validated_template = hot.utils.yaml.load(raw_template)
     except StandardError as exc:
         sys.exit(exc)
@@ -113,7 +112,6 @@ def get_resource_types(resources):
     return resources_list
 
 
-@alias('init')
 @arg('project', help='name of the template project to begin')
 @arg('-s', '--skeleton', default='https://github.com/brint/template-skeleton',
      help='git repo to clone when initializing this project')
@@ -122,28 +120,26 @@ def get_resource_types(resources):
                                           " the project")
 @arg('-v', '--verbose', default=False, help='show more verbose output while in'
                                             'itializing the project')
-def do_template_init(args):
+def init(project, **kwargs):
     """ Initialize a template project by cloning a skeleton repo.
 
     TODO: Implement verbose functionality
     """
-    project = getattr(args, 'project')
-    skeleton = getattr(args, 'skeleton')
-    branch = getattr(args, 'branch')
-    verbose = getattr(args, 'verbose')
-    no_git = getattr(args, 'no_git_init')
+    skeleton = kwargs['skeleton']
+    branch = kwargs['branch']
+    verbose = kwargs['verbose']
+    no_git = kwargs['no_git_init']
 
     if hot.utils.string.valid_project_name(project):
         if branch:
-            if hot.utils.repo.valid_branch_name(getattr(args, 'branch')):
+            if hot.utils.repo.valid_branch_name(branch):
                 if no_git:
                     hot.utils.repo.clone_repo(skeleton, project, branch,
                                               'False')
                 else:
                     hot.utils.repo.clone_repo(skeleton, project, branch)
             else:
-                raise Exception("Invalid branch name: '%s'" %
-                                getattr(args, 'branch'))
+                raise Exception("Invalid branch name: '%s'" % branch)
         else:
             if no_git:
                 hot.utils.repo.clone_repo(skeleton, project, git_init=False)
@@ -155,22 +151,21 @@ def do_template_init(args):
                         "acters. Name provided: %s" % project)
 
 
-@alias('lint')
 @arg('--template', default='.catalog', help='Heat template to launch.')
 @arg('--metadata', default='rackspace.yaml', help='Metadata file to audit')
-def do_template_lint(args):
+def lint(**kwargs):
     """Check a template against a set of best practices"""
-    verified_template_directory = hot.utils.repo.check(args)
-    template = getattr(args, 'template')
-    metadata = getattr(args, 'metadata')
+    verified_template_directory = hot.utils.repo.check(kwargs['template'])
+    template = kwargs['template']
+    metadata = kwargs['metadata']
 
     path_to_template = os.path.join(verified_template_directory, template)
     path_to_metadata = os.path.join(verified_template_directory, metadata)
 
     try:
-        raw_template = get_raw_yaml_file(args, file_path=path_to_template)
+        raw_template = get_raw_yaml_file(file_path=path_to_template)
         validated_template = hot.utils.yaml.load(raw_template)
-        raw_metadata = get_raw_yaml_file(args, file_path=path_to_metadata)
+        raw_metadata = get_raw_yaml_file(file_path=path_to_metadata)
         validated_metadata = hot.utils.yaml.load(raw_metadata)
 
     except StandardError as exc:
@@ -182,7 +177,6 @@ def do_template_lint(args):
         rule.check()
 
 
-@alias('test')
 @arg('--template', default='.catalog', help='Heat template to launch.')
 @arg('--tests-file', default='tests.yaml', help='Test file to use.')
 @arg('-k', '--keep-failed', default=False, help='Do not delete a failed test '
@@ -192,22 +186,24 @@ def do_template_lint(args):
 @arg('--test-cases', nargs='+', type=str, help='Space delimited list of '
                                                'tests to run. If none are '
                                                'specified, all will be run.')
-def do_template_test(args):
+def test(**kwargs):
     """ Test a template by going through the test scenarios in 'tests.yaml' or
     the tests file specified by the user
     """
-    verified_template_directory = hot.utils.repo.check(args)
-    template_attr = getattr(args, 'template')
-    tests_attr = getattr(args, 'tests_file')
-    test_cases = getattr(args, 'test_cases')
-    sleeper = getattr(args, 'sleep')
+    verified_template_directory = hot.utils.repo.check(kwargs['template'])
+    template_attr = kwargs['template']
+    tests_attr = kwargs['tests_file']
+    test_cases = kwargs['test_cases']
+    sleeper = kwargs['sleep']
+    keep_failed = kwargs['keep_failed']
+
     path_to_template = os.path.join(verified_template_directory, template_attr)
     path_to_tests = os.path.join(verified_template_directory, tests_attr)
     try:
         verify_environment_vars(ENV_VARS)
-        raw_template = get_raw_yaml_file(args, file_path=path_to_template)
+        raw_template = get_raw_yaml_file(file_path=path_to_template)
         validated_template = hot.utils.yaml.load(raw_template)
-        raw_tests = get_raw_yaml_file(args, file_path=path_to_tests)
+        raw_tests = get_raw_yaml_file(file_path=path_to_tests)
         validated_tests = hot.utils.yaml.load(raw_tests)
         tests = validated_tests['test-cases']
     except StandardError as exc:
@@ -230,7 +226,7 @@ def do_template_test(args):
         tests = user_tests
     for test in tests:
         stack = launch_test_deployment(hc, validated_template, test,
-                                       args.keep_failed, sleeper)
+                                       keep_failed, sleeper)
         if 'resource_tests' in test:
             try:
                 run_resource_tests(hc, stack['stack']['id'],
@@ -238,7 +234,7 @@ def do_template_test(args):
                 print "  Test Passed!"
             except:
                 exctype, value = sys.exc_info()[:2]
-                delete_test_deployment(hc, stack, args.keep_failed)
+                delete_test_deployment(hc, stack, keep_failed)
                 sys.exit("Test Failed! %s: %s" %
                          (exctype, value))
         delete_test_deployment(hc, stack)
@@ -382,12 +378,11 @@ def monitor_stack(hc, stack_id, sleeper=15):
             raise Exception("Stack build %s failed" % stack_id)
 
 
-def get_raw_yaml_file(args, file_path=None):
+def get_raw_yaml_file(file_path=None):
     """
 
     Reads the contents of any YAML file in the repository as a string
 
-    :param args: the hot call argument
     :param file_path: the file name with optional additional path
         (subdirectory) or as a URL
     :returns: the string contents of the file
@@ -416,10 +411,10 @@ def main():
     try:
         argparser = ArghParser()
         argparser.add_commands([
-            do_template_test,
-            do_create_docs,
-            do_template_init,
-            do_template_lint,
+            test,
+            docs,
+            init,
+            lint,
         ])
 
         argparser.dispatch()

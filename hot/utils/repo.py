@@ -10,7 +10,7 @@ from subprocess import check_output, CalledProcessError
 from urlparse import urlparse
 
 
-def check(args):
+def check(path):
     """ Determine if a command that expects to execute inside a template
         repo can continue. Checks for a .git directory and subsequently for
         a template.yaml file either in the working directory or the
@@ -21,8 +21,7 @@ def check(args):
     error_message = '`%s` does not appear to be a template repo.'
     cwd = os.getcwd()
 
-    # see if there is a 'template' attribute in args namespace
-    template_attr = getattr(args, 'template')
+    template_attr = path
 
     if template_attr:
         if not os.path.isdir(os.path.join(cwd, '.git')):
