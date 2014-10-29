@@ -47,7 +47,7 @@ def docs(**kwargs):
     """
     template_attr = kwargs['template']
     badge_attr = kwargs['badge']
-    metadata_attr = kwargs[args, 'metadata']
+    metadata_attr = kwargs['metadata']
     verified_template_directory = hot.utils.repo.check(template_attr)
     path_to_template = os.path.join(verified_template_directory, template_attr)
     path_to_metadata = os.path.join(verified_template_directory,
