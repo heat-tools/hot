@@ -55,8 +55,7 @@ def docs(**kwargs):
     try:
         raw_template = get_raw_yaml_file(file_path=path_to_template)
         validated_template = hot.utils.yaml.load(raw_template)
-        raw_metadata = get_raw_yaml_file(args,
-                                         file_path=path_to_metadata)
+        raw_metadata = get_raw_yaml_file(file_path=path_to_metadata)
         validated_metadata = hot.utils.yaml.load(raw_metadata)
     except StandardError as exc:
         sys.exit(exc)
