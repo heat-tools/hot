@@ -39,22 +39,52 @@ def verify_environment_vars(variables):
 
 
 @arg('--template', default='.catalog')
+@arg('--metadata', default='rackspace.yaml', help='Metadata file.')
+@arg('--badge', default='None', help='Badge to add to the top of the output.')
 def docs(**kwargs):
     """Generate the basics for the README.md based on the information in a
     given template.
     """
     template_attr = kwargs['template']
+    badge_attr = kwargs['badge']
+    metadata_attr = kwargs['metadata']
     verified_template_directory = hot.utils.repo.check(template_attr)
     path_to_template = os.path.join(verified_template_directory, template_attr)
+    path_to_metadata = os.path.join(verified_template_directory,
+                                    metadata_attr)
     try:
         raw_template = get_raw_yaml_file(file_path=path_to_template)
         validated_template = hot.utils.yaml.load(raw_template)
+        raw_metadata = get_raw_yaml_file(file_path=path_to_metadata)
+        validated_metadata = hot.utils.yaml.load(raw_metadata)
     except StandardError as exc:
         sys.exit(exc)
+    # Set necessary variables for CI badges based on rackspace.yaml information
+    if 'github-organization' in validated_metadata:
+        github_org = validated_metadata['github-organization']
+    else:
+        github_org = 'rackspace-orchestration-templates'
+    if 'github-repository-name' in validated_metadata:
+        github_repo = validated_metadata['github-repository-name']
+    else:
+        github_repo = False
+    # If the --badge arg is passed let's print the badges out first
+    # Also check and make sure we have values for the badge pieces
+    if badge_attr and github_repo and github_org:
+        if badge_attr == 'circle':
+            url_prefix = "https://circleci.com/gh/"
+            print "[![Circle CI]({0}{1}/{2}.png?style=badge)]({0}{1}/{2})"\
+                  .format(url_prefix, github_org, github_repo)
+        else:
+            pass
     # print validated_template['parameters']
     if 'description' in validated_template:
         print "Description\n===========\n\n%s\n" % \
               validated_template['description']
+    # Pull out the instructions from rackspace.yaml
+    if 'instructions' in validated_metadata:
+        print "Instructions\n===========\n\n{0}\n".format(
+            validated_metadata['instructions'])
     if 'resources' in validated_template:
         resources = get_resource_types(validated_template['resources'])
         print "Requirements\n============\n* A Heat provider that supports th"\
