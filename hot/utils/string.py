@@ -11,7 +11,6 @@ def list_to_string(values, join_char=" "):
 
 def string_to_list(value):
     """Converts a space delimited string into a list"""
-    print "debug: %s" % value
     if isinstance(value, str):
         return value.split()
     else:

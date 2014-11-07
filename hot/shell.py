@@ -73,27 +73,27 @@ def docs(**kwargs):
     if badge_attr and github_repo and github_org:
         if badge_attr == 'circle':
             url_prefix = "https://circleci.com/gh/"
-            print "[![Circle CI]({0}{1}/{2}.png?style=badge)]({0}{1}/{2})"\
-                  .format(url_prefix, github_org, github_repo)
+            print("[![Circle CI]({0}{1}/{2}.png?style=badge)]({0}{1}/{2})"\
+                  .format(url_prefix, github_org, github_repo))
         else:
             pass
     # print validated_template['parameters']
     if 'description' in validated_template:
-        print "Description\n===========\n\n%s\n" % \
-              validated_template['description']
+        print("Description\n===========\n\n%s\n" % \
+              validated_template['description'])
     # Pull out the instructions from rackspace.yaml
     if 'instructions' in validated_metadata:
-        print "Instructions\n===========\n\n{0}\n".format(
-            validated_metadata['instructions'])
+        print("Instructions\n===========\n\n{0}\n".format(
+            validated_metadata['instructions']))
     if 'resources' in validated_template:
         resources = get_resource_types(validated_template['resources'])
-        print "Requirements\n============\n* A Heat provider that supports th"\
+        print("Requirements\n============\n* A Heat provider that supports th"\
               "e following:\n  * %s\n* An OpenStack username, password, and t"\
               "enant id.\n* [python-heatclient](https://github.com/openstack/"\
               "python-heatclient)\n`>= v0.2.8`:\n\n```bash\npip install pytho"\
               "n-heatclient\n```\n\nWe recommend installing the client within"\
               " a [Python virtual\nenvironment](http://www.virtualenv.org/)."\
-              "\n" % '\n  * '.join(map(str, sorted(resources)))
+              "\n" % '\n  * '.join(map(str, sorted(resources))))
     for section in DOC_SECTIONS:
         if section in validated_template:
             header = ""
@@ -131,7 +131,7 @@ def convert_to_markdown(header, footer, values):
                 default = "''"
             outputs = outputs + "(Default: %s)" % default
     outputs = outputs + "\n%s" % footer
-    print outputs
+    print(outputs)
 
 
 def get_resource_types(resources):
@@ -261,7 +261,7 @@ def test(**kwargs):
             try:
                 run_resource_tests(hc, stack['stack']['id'],
                                    test)
-                print "  Test Passed!"
+                print("  Test Passed!")
             except:
                 exctype, value = sys.exc_info()[:2]
                 delete_test_deployment(hc, stack, keep_failed)
@@ -301,7 +301,7 @@ def run_resource_tests(hc, stack_id, resource_tests):
         elif "script" in test[test_name]:
             hot.tests.script.run_script(test_name, test[test_name])
         else:
-            print "  No tests defined."
+            print("  No tests defined.")
     if 'ssh_private_key' in resource_tests:
         hot.utils.files.delete_file(ssh_key_file)
 
@@ -347,9 +347,9 @@ def get_output(key, outputs):
 
 def delete_test_deployment(hc, stack, keep_deployment=False):
     if keep_deployment:
-        print "  Keeping %s up." % stack['stack']['id']
+        print("  Keeping %s up." % stack['stack']['id'])
     else:
-        print "  Deleting %s" % stack['stack']['id']
+        print("  Deleting %s" % stack['stack']['id'])
         hc.stacks.delete(stack['stack']['id'])
 
 
@@ -369,11 +369,11 @@ def launch_test_deployment(hc, template, test, keep_failed, sleeper):
     if parameters:
         data.update({"parameters": parameters})
 
-    print "Launching: %s" % stack_name
+    print("Launching: %s" % stack_name)
     stack = hc.stacks.create(**data)
 
     if timeout_value:
-        print "  Timeout set to %s seconds." % timeout_value
+        print("  Timeout set to %s seconds." % timeout_value)
 
     try:
         monitor_stack(hc, stack['stack']['id'], sleeper)
@@ -394,17 +394,17 @@ def get_create_value(test, key):
 def monitor_stack(hc, stack_id, sleeper=15):
     incomplete = True
     while incomplete:
-        print "  Stack %s in progress, checking in %s seconds.." % (stack_id,
-                                                                    sleeper)
+        print("  Stack %s in progress, checking in %s seconds.." % (stack_id,
+                                                                    sleeper))
         sleep(sleeper)
         status = hc.stacks.get(stack_id)
         if status.stack_status == u'CREATE_COMPLETE':
             incomplete = False
-            print "  Stack %s built successfully!" % stack_id
+            print("  Stack %s built successfully!" % stack_id)
         elif status.stack_status == u'CREATE_FAILED':
             stack_status = status.stack_status_reason
-            print "  Stack %s build failed! Reason:\n  %s" % (stack_id,
-                                                              stack_status)
+            print("  Stack %s build failed! Reason:\n  %s" % (stack_id,
+                                                              stack_status))
             raise Exception("Stack build %s failed" % stack_id)
 
 

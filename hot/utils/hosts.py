@@ -57,10 +57,10 @@ class Hosts(object):
         return '[Unknown]'
 
     def print_one(self, host_name):
-        print host_name, self.get_one(host_name)
+        print(host_name, self.get_one(host_name))
 
     def print_all(self, host_names=None):
-        print self.hosts
+        print(self.hosts)
         if host_names is None:
             for host_name in self.hosts.keys():
                 self.print_one(host_name)
@@ -178,21 +178,21 @@ if __name__ == '__main__':
         elif args.alias is not None:
             hosts.alias_all(args.name, args.alias)
             if args.dry:
-                print hosts.file_contents()
+                print(hosts.file_contents())
             else:
                 hosts.write(hosts_path)
         elif hasattr(args, 'ip_address'):
             hosts.set_all(args.name, args.ip_address)
             if args.dry:
-                print hosts.file_contents()
+                print(hosts.file_contents())
             else:
                 hosts.write(hosts_path)
         elif args.remove:
             hosts.remove_all(args.name)
             if args.dry:
-                print hosts.file_contents()
+                print(hosts.file_contents())
             else:
                 hosts.write(hosts_path)
     except Exception as e:
-        print 'Error: %s' % (e,)
+        print('Error: %s' % (e,))
         exit(1)

@@ -43,9 +43,9 @@ class TemplateLintRule(object):
         """Prints a rule message if the check fails"""
         if not self.passes_check():
             if self.custom_message:
-                print self.custom_message
+                print(self.custom_message)
             else:
-                print "%s: %s" % (self.name, self.description)
+                print("%s: %s" % (self.name, self.description))
 
 
 class TemplateLintRequiredSections(TemplateLintRule):

@@ -21,7 +21,7 @@ def run_script(test_name, test):
                 ip = entry["ip"]
                 if "hostnames" in entry:
                     for hostname in entry['hostnames']:
-                        print "  Setting host entry '%s\t%s'" % (ip, hostname)
+                        print("  Setting host entry '%s\t%s'" % (ip, hostname))
                         if isinstance(hostname, str):
                             h.set_one(hostname, ip)
                         elif isinstance(hostname, list):

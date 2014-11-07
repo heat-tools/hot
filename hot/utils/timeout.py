@@ -2,5 +2,5 @@
 
 
 def handler(signum, frame):
-    print "  Failure! Operation failed to complete within timeout window."
+    print("  Failure! Operation failed to complete within timeout window.")
     raise Exception("Operation timed out")
