@@ -10,7 +10,10 @@ import yaml
 from argh import arg, ArghParser
 from heatclient.v1 import Client as heatClient
 from time import sleep, time
-from urlparse import urlparse
+try:
+    from urllib.parse import urlparse
+except ImportError:
+    from urlparse import urlparse
 
 import hot.lint
 import hot.tests
