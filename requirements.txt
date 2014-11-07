@@ -6,7 +6,6 @@ argh==0.26.0
 argparse==1.2.1
 ecdsa==0.11
 envassert==0.1.7
-hot==0.4.0
 iso8601==0.1.10
 netaddr==0.7.12
 oslo.config==1.4.0
