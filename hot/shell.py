@@ -76,27 +76,27 @@ def docs(**kwargs):
     if badge_attr and github_repo and github_org:
         if badge_attr == 'circle':
             url_prefix = "https://circleci.com/gh/"
-            print("[![Circle CI]({0}{1}/{2}.png?style=badge)]({0}{1}/{2})"\
+            print("[![Circle CI]({0}{1}/{2}.png?style=badge)]({0}{1}/{2})"
                   .format(url_prefix, github_org, github_repo))
         else:
             pass
     # print validated_template['parameters']
     if 'description' in validated_template:
-        print("Description\n===========\n\n%s\n" % \
+        print("Description\n===========\n\n%s\n" %
               validated_template['description'])
     # Pull out the instructions from rackspace.yaml
     if 'instructions' in validated_metadata:
         print("Instructions\n===========\n\n{0}\n".format(
-            validated_metadata['instructions']))
+              validated_metadata['instructions']))
     if 'resources' in validated_template:
         resources = get_resource_types(validated_template['resources'])
-        print("Requirements\n============\n* A Heat provider that supports th"\
-              "e following:\n  * %s\n* An OpenStack username, password, and t"\
-              "enant id.\n* [python-heatclient](https://github.com/openstack/"\
-              "python-heatclient)\n`>= v0.2.8`:\n\n```bash\npip install pytho"\
-              "n-heatclient\n```\n\nWe recommend installing the client within"\
-              " a [Python virtual\nenvironment](http://www.virtualenv.org/)."\
-              "\n" % '\n  * '.join(map(str, sorted(resources))))
+        print("Requirements\n============\n* A Heat provider that supports the"
+              " following:\n  * %s\n* An OpenStack username, password, and ten"
+              "ant id.\n* [python-heatclient](https://github.com/openstack/pyt"
+              "hon-heatclient)\n`>= v0.2.8`:\n\n```bash\npip install python-he"
+              "atclient\n```\n\nWe recommend installing the client within a [P"
+              "ython virtual\nenvironment](http://www.virtualenv.org/).\n" %
+              '\n  * '.join(map(str, sorted(resources))))
     for section in DOC_SECTIONS:
         if section in validated_template:
             header = ""
