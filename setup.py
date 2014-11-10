@@ -35,8 +35,7 @@ setup(
         "requests==2.4.3",
         "six==1.8.0",
         "stevedore==1.1.0",
-        "urlparse2==1.1.1",
-        "wsgiref==0.1.2"
+        "urlparse2==1.1.1"
     ],
     license='Apache License (2.0)',
     classifiers=["Programming Language :: Python"],
