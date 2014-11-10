@@ -292,7 +292,7 @@ def run_resource_tests(hc, stack_id, resource_tests):
         os.makedirs(os.path.dirname(ssh_key_file))
 
     if 'ssh_private_key' in resource_tests:
-        with os.fdopen(os.open(ssh_key_file, os.O_WRONLY | os.O_CREAT, 0600),
+        with os.fdopen(os.open(ssh_key_file, os.O_WRONLY | os.O_CREAT, 0o600),
                        'w') as handle:
             handle.write(resource_tests['ssh_private_key'])
 
