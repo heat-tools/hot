@@ -13,6 +13,7 @@ Requirements
 ============
 * For Ubuntu 12.04/14.04, install the necessary packages:
   * `sudo apt-get install -y python-dev python-pip gcc libxslt1-dev python-lxml git`
+* Python 2.7 - hot will NOT work with Python 3 since it leverages fabric.
 * All systems: [pip](http://pip.readthedocs.org/en/latest/installing.html)
   1.5.6+ must be installed.
 * [virtualenv](http://virtualenv.readthedocs.org/en/latest/virtualenv.html#installation)
