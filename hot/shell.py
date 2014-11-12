@@ -371,8 +371,15 @@ def launch_test_deployment(hc, template, overrides, test, keep_failed,
     data = {"stack_name": stack_name, "template": yaml.safe_dump(template)}
 
     timeout = get_create_value(test, 'timeout')
-    parameters = dict(get_create_value(test, 'parameters').items() +
-                      utils.format_parameters(overrides).items())
+    parameters = get_create_value(test, 'parameters')
+
+    if overrides:
+        if parameters:
+            parameters = dict(parameters.items() +
+                              utils.format_parameters(overrides).items())
+        else:
+            parameters = utils.format_parameters(overrides)
+
     retries = get_create_value(test, 'retries')  # TODO: Implement retries
 
     if timeout:
