@@ -115,6 +115,7 @@ The test options are documented if you run `hot test --help`:
 $ hot test --help
 usage: hot test [-h] [--template TEMPLATE] [--tests-file TESTS_FILE] [-k]
                 [-s SLEEP] [--test-cases TEST_CASES [TEST_CASES ...]]
+                [-P <KEY1=VALUE1;KEY2=VALUE2...>]
 
  Test a template by going through the test scenarios in 'tests.yaml' or
     the tests file specified by the user
@@ -122,9 +123,9 @@ usage: hot test [-h] [--template TEMPLATE] [--tests-file TESTS_FILE] [-k]
 
 optional arguments:
   -h, --help            show this help message and exit
-  --template TEMPLATE   Heat template to launch. (default: .catalog)
+  --template TEMPLATE   Heat template to launch. (default: '.catalog')
   --tests-file TESTS_FILE
-                        Test file to use. (default: tests.yaml)
+                        Test file to use. (default: 'tests.yaml')
   -k, --keep-failed     Do not delete a failed test deployment. (default:
                         False)
   -s SLEEP, --sleep SLEEP
@@ -132,7 +133,13 @@ optional arguments:
                         15)
   --test-cases TEST_CASES [TEST_CASES ...]
                         Space delimited list of tests to run. If none are
-                        specified, all will be run. (default: None)
+                        specified, all will be run. (default: -)
+  -P <KEY1=VALUE1;KEY2=VALUE2...>, --parameters <KEY1=VALUE1;KEY2=VALUE2...>
+                        Parameter values used to create the stack. This can be
+                        specified multiple times, or once with parameters
+                        separated by a semicolon. The parameters specified
+                        here will override anything defined in the tests.
+                        (default: -)
 ```
 As a note, if you have spaces, commas, or other special characters, put the
 test name in double quotes, and each string will be interpreted individually.

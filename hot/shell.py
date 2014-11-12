@@ -8,6 +8,7 @@ import sys
 import yaml
 
 from argh import arg, ArghParser
+from heatclient.common import utils
 from heatclient.v1 import Client as heatClient
 from time import sleep, time
 try:
@@ -219,6 +220,11 @@ def lint(**kwargs):
 @arg('--test-cases', nargs='+', type=str, help='Space delimited list of '
                                                'tests to run. If none are '
                                                'specified, all will be run.')
+@arg('-P', '--parameters', metavar='<KEY1=VALUE1;KEY2=VALUE2...>',
+     help='Parameter values used to create the stack. This can be specified '
+     'multiple times, or once with parameters separated by a semicolon. The '
+     'parameters specified here will override anything defined in the tests.',
+     action='append')
 def test(**kwargs):
     """ Test a template by going through the test scenarios in 'tests.yaml' or
     the tests file specified by the user
@@ -229,6 +235,7 @@ def test(**kwargs):
     test_cases = kwargs['test_cases']
     sleeper = kwargs['sleep']
     keep_failed = kwargs['keep_failed']
+    parameter_overrides = kwargs['parameters']
 
     path_to_template = os.path.join(verified_template_directory, template_attr)
     path_to_tests = os.path.join(verified_template_directory, tests_attr)
@@ -258,8 +265,9 @@ def test(**kwargs):
                      "found: %s" % user_defined_tests)
         tests = user_tests
     for test in tests:
-        stack = launch_test_deployment(hc, validated_template, test,
-                                       keep_failed, sleeper)
+        stack = launch_test_deployment(hc, validated_template,
+                                       parameter_overrides, test, keep_failed,
+                                       sleeper)
         if 'resource_tests' in test:
             try:
                 run_resource_tests(hc, stack['stack']['id'],
@@ -356,13 +364,15 @@ def delete_test_deployment(hc, stack, keep_deployment=False):
         hc.stacks.delete(stack['stack']['id'])
 
 
-def launch_test_deployment(hc, template, test, keep_failed, sleeper):
+def launch_test_deployment(hc, template, overrides, test, keep_failed,
+                           sleeper):
     pattern = re.compile('[\W]')
     stack_name = pattern.sub('_', "%s-%s" % (test['name'], time()))
     data = {"stack_name": stack_name, "template": yaml.safe_dump(template)}
 
     timeout = get_create_value(test, 'timeout')
-    parameters = get_create_value(test, 'parameters')
+    parameters = dict(get_create_value(test, 'parameters').items() +
+                      utils.format_parameters(overrides).items())
     retries = get_create_value(test, 'retries')  # TODO: Implement retries
 
     if timeout:
