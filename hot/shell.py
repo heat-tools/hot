@@ -1,4 +1,5 @@
 """ hot is the command-line tool for testing Heat Templates """
+import collections
 import json
 import os
 import re
@@ -45,6 +46,8 @@ def verify_environment_vars(variables):
 @arg('--template', default='.catalog')
 @arg('--metadata', default='rackspace.yaml', help='Metadata file.')
 @arg('--badge', default='None', help='Badge to add to the top of the output.')
+@arg('-a', '--alphabetical', default=False, help='Alphabetically sort keys '
+                                                 'when creating docs.')
 def docs(**kwargs):
     """Generate the basics for the README.md based on the information in a
     given template.
@@ -52,6 +55,7 @@ def docs(**kwargs):
     template_attr = kwargs['template']
     badge_attr = kwargs['badge']
     metadata_attr = kwargs['metadata']
+    alphabetical = kwargs['alphabetical']
     verified_template_directory = hot.utils.repo.check(template_attr)
     path_to_template = os.path.join(verified_template_directory, template_attr)
     path_to_metadata = os.path.join(verified_template_directory,
@@ -116,11 +120,14 @@ def docs(**kwargs):
                          "cho -e '<STRING>' > file.txt`. For vim users, a sub"\
                          "stitution\ncan be done within a file using `%s/\\\\"\
                          "n/\\r/g`."
-            convert_to_markdown(header, footer, validated_template[section])
+            convert_to_markdown(header, footer, validated_template[section],
+                                alphabetical)
 
 
-def convert_to_markdown(header, footer, values):
+def convert_to_markdown(header, footer, values, alphabetical):
     """Convert input to markdown format"""
+    if alphabetical:
+        values = collections.OrderedDict(sorted(values.items()))
     outputs = "%s" % header
     for value in values:
         key = value
