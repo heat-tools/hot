@@ -115,7 +115,7 @@ The test options are documented if you run `hot test --help`:
 $ hot test --help
 usage: hot test [-h] [--template TEMPLATE] [--tests-file TESTS_FILE] [-k]
                 [-s SLEEP] [--test-cases TEST_CASES [TEST_CASES ...]]
-                [-P <KEY1=VALUE1;KEY2=VALUE2...>]
+                [-P <KEY1=VALUE1;KEY2=VALUE2...>] [--insecure]
 
  Test a template by going through the test scenarios in 'tests.yaml' or
     the tests file specified by the user
@@ -140,6 +140,8 @@ optional arguments:
                         separated by a semicolon. The parameters specified
                         here will override anything defined in the tests.
                         (default: -)
+  --insecure            Same as to -k flag with curl, do not strictly validate
+                        SSL certificates. (default: False)
 ```
 As a note, if you have spaces, commas, or other special characters, put the
 test name in double quotes, and each string will be interpreted individually.
