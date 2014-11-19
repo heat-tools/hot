@@ -21,6 +21,7 @@ import hot.lint
 import hot.tests
 import hot.utils
 import hot.utils.auth
+from hot.utils.yaml import OrderedDictYAMLLoader as OrderedDictYAMLLoader
 
 
 ENV_VARS = ['OS_PASSWORD', 'OS_USERNAME', 'OS_TENANT_ID', 'OS_AUTH_URL']
@@ -62,9 +63,9 @@ def docs(**kwargs):
                                     metadata_attr)
     try:
         raw_template = get_raw_yaml_file(file_path=path_to_template)
-        validated_template = hot.utils.yaml.load(raw_template)
+        validated_template = yaml.load(raw_template, OrderedDictYAMLLoader)
         raw_metadata = get_raw_yaml_file(file_path=path_to_metadata)
-        validated_metadata = hot.utils.yaml.load(raw_metadata)
+        validated_metadata = yaml.load(raw_metadata, OrderedDictYAMLLoader)
     except StandardError as exc:
         sys.exit(exc)
     # Set necessary variables for CI badges based on rackspace.yaml information
