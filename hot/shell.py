@@ -233,6 +233,8 @@ def lint(**kwargs):
      'multiple times, or once with parameters separated by a semicolon. The '
      'parameters specified here will override anything defined in the tests.',
      action='append')
+@arg('--insecure', default=False, help='Same as to -k flag with curl, do not '
+     'strictly validate SSL certificates.')
 def test(**kwargs):
     """ Test a template by going through the test scenarios in 'tests.yaml' or
     the tests file specified by the user
@@ -244,6 +246,7 @@ def test(**kwargs):
     sleeper = kwargs['sleep']
     keep_failed = kwargs['keep_failed']
     parameter_overrides = kwargs['parameters']
+    insecure = kwargs['insecure']
 
     path_to_template = os.path.join(verified_template_directory, template_attr)
     path_to_tests = os.path.join(verified_template_directory, tests_attr)
@@ -259,7 +262,11 @@ def test(**kwargs):
 
     auth = hot.utils.auth.OSAuth()
 
-    hc = heatClient(endpoint=auth.get_heat_url(), token=auth.get_token())
+    if insecure:
+        hc = heatClient(endpoint=auth.get_heat_url(), token=auth.get_token(),
+                        insecure=True)
+    else:
+        hc = heatClient(endpoint=auth.get_heat_url(), token=auth.get_token())
 
     if test_cases:
         user_tests = []
