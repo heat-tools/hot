@@ -71,8 +71,10 @@ you.
 ## get_output
 There is a useful function called `get_output` that can be called to plug
 in outputs from your heat stack. It will replace itself with the output value
-for a given `output-list` key.  The output you fetch, must be in the outputs
-section of your template.  An example would be:
+for a given `output-list` key. The output you fetch, must be in the outputs
+section of your Heat template. This function will only work in the
+`resource_tests` section of your tests file since the stack must be up before
+the values can be retrieved. An example of use would be:
 ```yaml
 hosts: { get_output: server_ip }
 ```
@@ -83,6 +85,15 @@ dictionary will be updated and interpreted like this when the tests are run:
 ```yaml
 hosts: 1.2.3.4
 ```
+
+## get_env
+The `get_env` function is very similar to `get_output`. If included in a tests
+file, it will replace the value with the corresponding environment variable. If
+that environment variable is not set, it will throw a `KeyError`.  Example:
+```yaml
+server_hostname: { get_env: TESTING_HOSTNAME }
+```
+This function will work inside of any section within your tests file.
 
 ## Creating/Launching a stack
 The `test-cases` are a list of tests to run. They are run sequentially, and

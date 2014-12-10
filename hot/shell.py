@@ -256,7 +256,7 @@ def test(**kwargs):
         validated_template = hot.utils.yaml.load(raw_template)
         raw_tests = get_raw_yaml_file(file_path=path_to_tests)
         validated_tests = hot.utils.yaml.load(raw_tests)
-        tests = validated_tests['test-cases']
+        tests = update_dict_env(validated_tests['test-cases'])
     except StandardError as exc:
         sys.exit(exc)
 
@@ -357,6 +357,40 @@ def update_dict(items, outputs):
     return items
 
 
+def update_dict_env(tests):
+    updated_list = []
+    for test in tests:
+        updated_list.append(test_dict_env_update(test))
+    return updated_list
+
+
+def test_dict_env_update(items):
+    """Update the dict that will be used for provisioning. This will take
+       anything like { get_env: ENVIRONMENT_VAR } and replace it with the value
+       of the specified environment variable.
+    """
+    try:
+        for k, v in items.items():
+            if isinstance(v, dict):
+                items[k] = test_dict_env_update(v)
+            elif isinstance(v, list):
+                new_list = []
+                for e in v:
+                    new_list.append(test_dict_env_update(e))
+                items[k] = new_list
+            elif isinstance(v, int):
+                items[k] = v
+            elif k == 'get_env':
+                return get_env(v)
+            else:
+                items[k] = v
+    except KeyError:
+        raise
+    except:
+        pass
+    return items
+
+
 def convert_to_array(value):
     """Converts string to array, if `value` is an array, returns `value`"""
     if isinstance(value, list):
@@ -369,6 +403,14 @@ def get_output(key, outputs):
     for output in outputs:
         if output['output_key'] == key:
             return output['output_value']
+
+
+def get_env(key):
+    try:
+        return os.environ[key]
+    except KeyError:
+        raise KeyError("KeyError: Environment variable `%s` is not defined" %
+                       (key))
 
 
 def delete_test_deployment(hc, stack, keep_deployment=False):
