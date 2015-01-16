@@ -458,7 +458,7 @@ def launch_test_deployment(hc, template, overrides, test, keep_failed,
             signal.alarm(0)
     except Exception as exc:
         print exc
-        if "Script exited with code 1" not in exc:
+        if "Script exited with code 1" not in str(exc):
             print("Infrastructure failure. Skipping tests.")
         else:
             print("Automation scripts failed. Running tests anyway:")
