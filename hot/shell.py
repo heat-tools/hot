@@ -456,7 +456,18 @@ def launch_test_deployment(hc, template, overrides, test, keep_failed,
         monitor_stack(hc, stack['stack']['id'], sleeper)
         if timeout_value:
             signal.alarm(0)
-    except Exception:
+    except Exception as exc:
+        print exc
+        if "Script exited with code 1" not in exc:
+            print("Infrastructure failure. Skipping tests.")
+        else:
+            print("Automation scripts failed. Running tests anyway:")
+            try:
+                run_resource_tests(hc, stack['stack']['id'], test)
+                print("  Test Passed!")
+            except:
+                exctype, value = sys.exc_info()[:2]
+                print("Test Failed! {0}: {1}".format(exctype, value))
         delete_test_deployment(hc, stack, keep_failed)
         sys.exit("Stack failed to deploy")
     return stack
@@ -482,7 +493,8 @@ def monitor_stack(hc, stack_id, sleeper=15):
             stack_status = status.stack_status_reason
             print("  Stack %s build failed! Reason:\n  %s" % (stack_id,
                                                               stack_status))
-            raise Exception("Stack build %s failed" % stack_id)
+            raise Exception("Stack build {0} failed! Reason: {1}".format(
+                stack_id, stack_status))
 
 
 def get_raw_yaml_file(file_path=None):
