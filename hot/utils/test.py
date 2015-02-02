@@ -9,12 +9,7 @@ def get_artifacts(artifacts, envvar='CIRCLE_ARTIFACTS'):
     """Uses Fabric to get each artifact provided by the artifacts list."""
 
     # Pull artifacts directory target from env vars
-    try:
-        os.environ[envvar]
-    except:
-        directory = 'tmp'
-    else:
-        directory = os.environ[envvar]
+    directory = os.environ.get(envvar, 'tmp')
 
     for artifact in artifacts:
         target = directory + "/%(host)s/%(path)s"
