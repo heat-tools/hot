@@ -219,6 +219,28 @@ def lint(**kwargs):
         rule.check()
 
 
+def tests_subset_ci(tests):
+    if 'CIRCLE_NODE_TOTAL' in os.environ and \
+       'CIRCLE_NODE_INDEX' in os.environ:
+        increment = 0
+        node_total = int(os.environ.get('CIRCLE_NODE_TOTAL'))
+        node_index = int(os.environ.get('CIRCLE_NODE_INDEX'))
+        tests_to_run = []
+        for case in tests:
+            if (increment % node_total) == node_index:
+                tests_to_run.append(case)
+            increment += 1
+        print "selecting {}/{} tests for node {}/{}. Running:\n{}\n".format(
+            len(tests_to_run),
+            len(tests),
+            node_index,
+            node_total,
+            "\n".join([test.get('name') for test in tests_to_run]))
+        return tests_to_run
+    else:
+        return tests
+
+
 @arg('--template', default='.catalog', help='Heat template to launch.')
 @arg('--tests-file', default='tests.yaml', help='Test file to use.')
 @arg('-k', '--keep-failed', default=False, help='Do not delete a failed test '
@@ -235,6 +257,9 @@ def lint(**kwargs):
      action='append')
 @arg('--insecure', default=False, help='Same as to -k flag with curl, do not '
      'strictly validate SSL certificates.')
+@arg('--ci-parallel', default=False, help='Parallelize using CI provider '
+     'methods. CircleCI is supported using the '
+     'CIRCLE_NODE_TOTAL & CIRCLE_NODE_INDEX environment variables.')
 def test(**kwargs):
     """ Test a template by going through the test scenarios in 'tests.yaml' or
     the tests file specified by the user
@@ -247,6 +272,7 @@ def test(**kwargs):
     keep_failed = kwargs['keep_failed']
     parameter_overrides = kwargs['parameters']
     insecure = kwargs['insecure']
+    parallelize_ci = kwargs['ci_parallel']
 
     path_to_template = os.path.join(verified_template_directory, template_attr)
     path_to_tests = os.path.join(verified_template_directory, tests_attr)
@@ -279,6 +305,10 @@ def test(**kwargs):
             sys.exit("Error: One or more of the following test cases not "
                      "found: %s" % user_defined_tests)
         tests = user_tests
+
+    if parallelize_ci:
+        tests = tests_subset_ci(tests)
+
     for test in tests:
         stack = launch_test_deployment(hc, validated_template,
                                        parameter_overrides, test, keep_failed,
