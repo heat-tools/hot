@@ -26,7 +26,7 @@ def get_artifacts(artifacts=False, envvar='CIRCLE_ARTIFACTS'):
     for artifact in artifacts:
         target = directory + "/%(host)s/%(path)s"
         try:
-            with hide('running', 'stdout'):
+            with hide('aborts'):
                 get(artifact, target)
         except:
             pass
