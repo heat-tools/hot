@@ -17,15 +17,18 @@ def get_artifacts(artifacts=False, envvar='CIRCLE_ARTIFACTS'):
         pass
     else:
         heat_logs = ['/root/cfn-userdata.log', '/root/heat-script.log']
+        cloudinit_logs = ['/var/log/cloud-init.log',
+                          '/var/log/cloud-init-output.log']
         code = "python -c 'from glob import glob; \
                     print glob(\"/tmp/heat_chef/*-*-*-*-*/*.log\")'"
         chef_logs = literal_eval(run(code))
-        artifacts = heat_logs + chef_logs
+        artifacts = heat_logs + chef_logs + cloudinit_logs
 
     for artifact in artifacts:
         target = directory + "/%(host)s/%(path)s"
         try:
-            get(artifact, target)
+            with hide('aborts'):
+                get(artifact, target)
         except:
             pass
 
