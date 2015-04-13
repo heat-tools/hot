@@ -82,7 +82,7 @@ def docs(**kwargs):
     if badge_attr and github_repo and github_org:
         if badge_attr == 'circle':
             url_prefix = "https://circleci.com/gh/"
-            print("[![Circle CI]({0}{1}/{2}.png?style=badge)]({0}{1}/{2})"
+            print("[![Circle CI]({0}{1}/{2}.svg?style=svg)]({0}{1}/{2})"
                   .format(url_prefix, github_org, github_repo))
         else:
             pass
