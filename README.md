@@ -36,7 +36,7 @@ pip install hot
 Clone it down, install it:
 
 ```
-git clone git@github.com:brint/hot.git
+git clone git@github.com:heat-tools/hot.git
 cd hot
 virtualenv .hot
 source .hot/bin/activate
