@@ -39,5 +39,5 @@ setup(
     ],
     license='Apache License (2.0)',
     classifiers=["Programming Language :: Python"],
-    url='https://github.com/brint/hot'
+    url='https://github.com/heat-tools/hot'
 )
