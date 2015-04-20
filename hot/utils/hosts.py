@@ -148,7 +148,6 @@ class Hosts(object):
         self.set_all(host_names, self.get_one(target, raise_on_not_found=True))
 
 if __name__ == '__main__':
-    import os
     import argparse
 
     parser = argparse.ArgumentParser(description='Manipulate your hosts file')
