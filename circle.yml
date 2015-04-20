@@ -4,4 +4,3 @@ dependencies:
 test:
   override:
     - flake8 hot
-    - python setyp.py install
