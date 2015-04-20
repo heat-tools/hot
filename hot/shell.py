@@ -1,10 +1,8 @@
 """ hot is the command-line tool for testing Heat Templates """
 import collections
-import json
 import os
 import re
 import signal
-import string
 import sys
 import yaml
 
@@ -169,7 +167,7 @@ def init(project, **kwargs):
     """
     skeleton = kwargs['skeleton']
     branch = kwargs['branch']
-    verbose = kwargs['verbose']
+    # verbose = kwargs['verbose']
     no_git = kwargs['no_git_init']
 
     if hot.utils.string.valid_project_name(project):
@@ -467,7 +465,7 @@ def launch_test_deployment(hc, template, overrides, test, keep_failed,
         else:
             parameters = utils.format_parameters(overrides)
 
-    retries = get_create_value(test, 'retries')  # TODO: Implement retries
+    # retries = get_create_value(test, 'retries')  # TODO: Implement retries
 
     if timeout:
         timeout_value = timeout * 60
