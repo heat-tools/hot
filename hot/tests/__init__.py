@@ -1,4 +1,7 @@
 """Various testing functions for templates"""
 
-import hot.tests.fab
-import hot.tests.script
+import fab
+import script
+
+__all__ = ["fab",
+           "script"]
