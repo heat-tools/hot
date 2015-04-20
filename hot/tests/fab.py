@@ -2,7 +2,7 @@ import fabric
 import imp
 import os
 
-from fabric.api import env, task
+from fabric.api import env
 
 
 def run_fabric_tasks(test_name, test):
