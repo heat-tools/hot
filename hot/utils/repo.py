@@ -4,7 +4,7 @@ import os
 import shutil
 import sys
 
-from git import Git, exc
+from git import Git, GitCommandError
 
 
 def check(path):
@@ -64,5 +64,5 @@ def valid_branch_name(branch):
     try:
         Git().check_ref_format("--branch", branch)
         return True
-    except exc.GitCommandError:
+    except GitCommandError:
         return False
