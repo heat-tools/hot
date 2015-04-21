@@ -29,4 +29,4 @@ class TestUtilFiles(unittest.TestCase):
         self.assertRaises(TypeError, files.delete_file, self.dictionary)
 
 if __name__ == "__main__":
-    unittest.main()
+    unittest.main(buffer=True)
