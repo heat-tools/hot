@@ -1,7 +1,6 @@
 dependencies:
   pre:
     - pip install flake8
-    - pip install unittest
 test:
   override:
     - flake8 hot
