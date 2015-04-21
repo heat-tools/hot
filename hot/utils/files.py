@@ -2,12 +2,12 @@
 import os
 
 
-def write_file(file, value):
+def write_file(f, value):
     """Write something into a file. Overwrite if existing, create if new"""
-    if isinstance(file, str):
-        print("Writing file '%s'" % files)
-        f = open(file, "wb")
-        f.write(value)
+    if isinstance(f, str):
+        print("Writing file '%s'" % f)
+        fh = open(f, "wb")
+        fh.write(value)
     else:
         raise TypeError
 
@@ -15,9 +15,9 @@ def write_file(file, value):
 def delete_file(value):
     """Delete an individual file, or a list of files"""
     if isinstance(value, list):
-        for file in value:
-            print("Deleting file '%s'" % file)
-            os.remove(file)
+        for f in value:
+            print("Deleting file '%s'" % f)
+            os.remove(f)
     elif isinstance(value, str):
         print("Deleting file '%s'" % value)
         os.remove(value)

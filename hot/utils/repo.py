@@ -3,11 +3,8 @@
 import os
 import shutil
 import sys
-import time
 
-from git import Git
-from subprocess import check_output, CalledProcessError
-from urlparse import urlparse
+from git import Git, GitCommandError
 
 
 def check(path):
