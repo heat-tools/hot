@@ -8,7 +8,8 @@ class TestUtilFiles(unittest.TestCase):
     def setUp(self):
         self.wf = "writefile.temp"
         self.string = "test value"
-        self.lst = ["delfile.temp"]
+        self.boolean = True
+        self.lst = ["deletefile.temp"]
         self.dictionary = {}
 
     def test_write_file(self):
@@ -16,7 +17,7 @@ class TestUtilFiles(unittest.TestCase):
         os.remove(self.wf)
 
     def test_write_file_invalid(self):
-        self.assertRaises(TypeError, files.write_file, self.wf, self.lst)
+        self.assertRaises(TypeError, files.write_file, self.wf, self.boolean)
         os.remove(self.wf)
 
     def test_delete_file(self):
