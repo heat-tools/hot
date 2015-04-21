@@ -10,3 +10,6 @@ vagrant/tmp/
 
 # Python virtualenv for testing
 venv
+
+# vim swap files
+*.swp
