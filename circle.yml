@@ -4,3 +4,4 @@ dependencies:
 test:
   override:
     - flake8 hot
+    - python -m unittest discover tests
