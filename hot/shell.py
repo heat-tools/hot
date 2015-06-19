@@ -153,7 +153,8 @@ def get_resource_types(resources):
 
 
 @arg('project', help='name of the template project to begin')
-@arg('-s', '--skeleton', default='https://github.com/brint/template-skeleton',
+@arg('-s', '--skeleton',
+     default='https://github.com/heat-tools/template-skeleton',
      help='git repo to clone when initializing this project')
 @arg('-b', '--branch', help='optional: specify the branch to clone')
 @arg('--no-git-init', default=False, help="Do not use 'git init' to initialize"
