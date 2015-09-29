@@ -469,6 +469,7 @@ def launch_test_deployment(hc, template, overrides, test, keep_failed,
     # retries = get_create_value(test, 'retries')  # TODO: Implement retries
 
     if timeout:
+        data["timeout_mins"] = timeout
         timeout_value = timeout * 60
         signal.signal(signal.SIGALRM, hot.utils.timeout.handler)
         signal.alarm(timeout_value)
