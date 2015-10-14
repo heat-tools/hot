@@ -175,7 +175,7 @@ down for all tests that are run:
   in place since the key file has specific permission requirements.
 
 ### Fabric
-`hot` supports template yaml sytax checking, stack build success verification,
+`hot` supports template yaml syntax checking, stack build success verification,
 and highly-flexible [fabric](http://www.fabfile.org/)-based integration testing
 to test the resulting servers using
 [envassert](https://bitbucket.org/r_rudi/envassert) and any other methods
