@@ -453,9 +453,10 @@ def delete_test_deployment(hc, stack, keep_deployment=False):
 
 def launch_test_deployment(hc, template, overrides, test, keep_failed,
                            sleeper):
-    retries = get_create_value(test,'retries')
+    retries = get_create_value(test, 'retries')
     if (retries is None):
         retries = 3
+
     def retry_on_error(exception):
         print exception
         error_reasons = get_create_value(test, 'retry_on')
@@ -466,9 +467,9 @@ def launch_test_deployment(hc, template, overrides, test, keep_failed,
                 return True
         return False
 
-    @retry(stop_max_attempt_number=retries, retry_on_exception=retry_on_error, wrap_exception=True)
-    def deploy(hc, template, overrides, test, keep_failed,
-                               sleeper):
+    @retry(stop_max_attempt_number=retries, retry_on_exception=retry_on_error,
+           wrap_exception=True)
+    def deploy(hc, template, overrides, test, keep_failed, sleeper):
         pattern = re.compile('[\W]')
         stack_name = pattern.sub('_', "%s-%s" % (test['name'], time()))
         data = {"stack_name": stack_name, "template": yaml.safe_dump(template)}
@@ -483,7 +484,7 @@ def launch_test_deployment(hc, template, overrides, test, keep_failed,
             else:
                 parameters = utils.format_parameters(overrides)
 
-        # retries = get_create_value(test, 'retries')  # TODO: Implement retries
+        # retries = get_create_value(test, 'retries') # TODO: Implement retries
 
         if timeout:
             timeout_value = timeout * 60
@@ -517,8 +518,7 @@ def launch_test_deployment(hc, template, overrides, test, keep_failed,
             delete_test_deployment(hc, stack, keep_failed)
             sys.exit("Stack failed to deploy")
         return stack
-    return deploy(hc, template, overrides, test, keep_failed,
-                               sleeper)
+    return deploy(hc, template, overrides, test, keep_failed, sleeper)
 
 
 def get_create_value(test, key):
