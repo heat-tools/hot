@@ -10,6 +10,7 @@ from argh import arg, ArghParser
 from heatclient.common import utils
 from heatclient.v1 import Client as heatClient
 from time import sleep, time
+from retrying import retry
 try:
     from urllib.parse import urlparse
 except ImportError:
@@ -452,54 +453,72 @@ def delete_test_deployment(hc, stack, keep_deployment=False):
 
 def launch_test_deployment(hc, template, overrides, test, keep_failed,
                            sleeper):
-    pattern = re.compile('[\W]')
-    stack_name = pattern.sub('_', "%s-%s" % (test['name'], time()))
-    data = {"stack_name": stack_name, "template": yaml.safe_dump(template)}
+    retries = get_create_value(test,'retries')
+    if (retries is None):
+        retries = 3
+    def retry_on_error(exception):
+        print exception
+        error_reasons = get_create_value(test, 'retry_on')
+        if error_reasons is None:
+            return True
+        for error_reason in error_reasons:
+            if error_reason in str(exception):
+                return True
+        return False
 
-    timeout = get_create_value(test, 'timeout')
-    parameters = get_create_value(test, 'parameters')
+    @retry(stop_max_attempt_number=retries, retry_on_exception=retry_on_error, wrap_exception=True)
+    def deploy(hc, template, overrides, test, keep_failed,
+                               sleeper):
+        pattern = re.compile('[\W]')
+        stack_name = pattern.sub('_', "%s-%s" % (test['name'], time()))
+        data = {"stack_name": stack_name, "template": yaml.safe_dump(template)}
 
-    if overrides:
+        timeout = get_create_value(test, 'timeout')
+        parameters = get_create_value(test, 'parameters')
+
+        if overrides:
+            if parameters:
+                parameters = dict(parameters.items() +
+                                  utils.format_parameters(overrides).items())
+            else:
+                parameters = utils.format_parameters(overrides)
+
+        # retries = get_create_value(test, 'retries')  # TODO: Implement retries
+
+        if timeout:
+            timeout_value = timeout * 60
+            signal.signal(signal.SIGALRM, hot.utils.timeout.handler)
+            signal.alarm(timeout_value)
         if parameters:
-            parameters = dict(parameters.items() +
-                              utils.format_parameters(overrides).items())
-        else:
-            parameters = utils.format_parameters(overrides)
+            data.update({"parameters": parameters})
 
-    # retries = get_create_value(test, 'retries')  # TODO: Implement retries
+        print("Launching: %s" % stack_name)
+        stack = hc.stacks.create(**data)
 
-    if timeout:
-        timeout_value = timeout * 60
-        signal.signal(signal.SIGALRM, hot.utils.timeout.handler)
-        signal.alarm(timeout_value)
-    if parameters:
-        data.update({"parameters": parameters})
-
-    print("Launching: %s" % stack_name)
-    stack = hc.stacks.create(**data)
-
-    if timeout_value:
-        print("  Timeout set to %s seconds." % timeout_value)
-
-    try:
-        monitor_stack(hc, stack['stack']['id'], sleeper)
         if timeout_value:
-            signal.alarm(0)
-    except Exception as exc:
-        print exc
-        if "Script exited with code 1" not in str(exc):
-            print("Infrastructure failure. Skipping tests.")
-        else:
-            print("Automation scripts failed. Running tests anyway:")
-            try:
-                run_resource_tests(hc, stack['stack']['id'], test)
-                print("  Test Passed!")
-            except:
-                exctype, value = sys.exc_info()[:2]
-                print("Test Failed! {0}: {1}".format(exctype, value))
-        delete_test_deployment(hc, stack, keep_failed)
-        sys.exit("Stack failed to deploy")
-    return stack
+            print("  Timeout set to %s seconds." % timeout_value)
+
+        try:
+            monitor_stack(hc, stack['stack']['id'], sleeper)
+            if timeout_value:
+                signal.alarm(0)
+        except Exception as exc:
+            print exc
+            if "Script exited with code 1" not in str(exc):
+                print("Infrastructure failure. Skipping tests.")
+            else:
+                print("Automation scripts failed. Running tests anyway:")
+                try:
+                    run_resource_tests(hc, stack['stack']['id'], test)
+                    print("  Test Passed!")
+                except:
+                    exctype, value = sys.exc_info()[:2]
+                    print("Test Failed! {0}: {1}".format(exctype, value))
+            delete_test_deployment(hc, stack, keep_failed)
+            sys.exit("Stack failed to deploy")
+        return stack
+    return deploy(hc, template, overrides, test, keep_failed,
+                               sleeper)
 
 
 def get_create_value(test, key):
