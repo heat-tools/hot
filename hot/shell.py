@@ -491,7 +491,20 @@ def launch_test_deployment(hc, template, overrides, test, keep_failed,
             signal.signal(signal.SIGALRM, hot.utils.timeout.handler)
             signal.alarm(timeout_value)
         if parameters:
-            data.update({"parameters": parameters})
+            parameters = dict(parameters.items() +
+                              utils.format_parameters(overrides).items())
+        else:
+            parameters = utils.format_parameters(overrides)
+
+    # retries = get_create_value(test, 'retries')  # TODO: Implement retries
+
+    if timeout:
+        data["timeout_mins"] = timeout
+        timeout_value = timeout * 60
+        signal.signal(signal.SIGALRM, hot.utils.timeout.handler)
+        signal.alarm(timeout_value)
+    if parameters:
+        data.update({"parameters": parameters})
 
         print("Launching: %s" % stack_name)
         stack = hc.stacks.create(**data)
