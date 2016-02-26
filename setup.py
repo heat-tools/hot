@@ -35,7 +35,8 @@ setup(
         "requests==2.4.3",
         "six==1.8.0",
         "stevedore==1.1.0",
-        "urlparse2==1.1.1"
+        "urlparse2==1.1.1",
+        "retrying"
     ],
     license='Apache License (2.0)',
     classifiers=["Programming Language :: Python"],
