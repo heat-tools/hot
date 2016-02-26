@@ -4,7 +4,7 @@ setup(
     name='hot',
     description='Heat author command-line utility',
     keywords='heat orchestration configuration automation rackspace openstack',
-    version='0.5.8',
+    version='0.5.9',
     author='Rackspace',
     author_email='brint.ohearn@rackspace.com',
     entry_points={'console_scripts': ['hot=hot.shell:main']},
@@ -35,7 +35,8 @@ setup(
         "requests==2.4.3",
         "six==1.8.0",
         "stevedore==1.1.0",
-        "urlparse2==1.1.1"
+        "urlparse2==1.1.1",
+        "retrying"
     ],
     license='Apache License (2.0)',
     classifiers=["Programming Language :: Python"],
