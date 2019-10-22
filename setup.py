@@ -16,7 +16,7 @@ setup(
         "PyYAML==3.11",
         "argh==0.26.0",
         "argparse==1.2.1",
-        "ecdsa==0.11",
+        "ecdsa==0.13.3",
         "envassert==0.1.7",
         "iso8601==0.1.10",
         "netaddr==0.7.12",
