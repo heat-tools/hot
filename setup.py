@@ -13,7 +13,7 @@ setup(
         "Babel==1.3",
         "Fabric==1.10.0",
         "GitPython==0.1.7",
-        "PyYAML==3.11",
+        "PyYAML==5.4",
         "argh==0.26.0",
         "argparse==1.2.1",
         "ecdsa==0.11",
