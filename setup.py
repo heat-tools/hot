@@ -10,7 +10,7 @@ setup(
     entry_points={'console_scripts': ['hot=hot.shell:main']},
     packages=find_packages(exclude=['vagrant', 'tests', 'examples', 'doc']),
     install_requires=[
-        "Babel==1.3",
+        "Babel==2.9.1",
         "Fabric==1.10.0",
         "GitPython==0.1.7",
         "PyYAML==3.11",
