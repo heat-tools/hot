@@ -23,7 +23,7 @@ setup(
         "oslo.config==1.4.0",
         "oslo.i18n==1.0.0",
         "oslo.serialization==1.0.0",
-        "oslo.utils==1.0.0",
+        "oslo.utils==4.10.1",
         "paramiko==1.15.1",
         "pbr==0.10.0",
         "prettytable==0.7.2",
